@@ -25,6 +25,7 @@ class CustomOrderController extends Controller
             ['img' => 'biscoff_cookie.png', 'name' => 'Lotus Biscoff Base', 'id' => 'lotus-biscoff'],
             // Add other bases if needed
             // I love vivian
+            // I love violet
         ];
 
         // Price for a single custom cookie base (adjust if needed)
