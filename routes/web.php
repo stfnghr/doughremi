@@ -1,6 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MenuController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\CustomOrderController;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/', function () {
     return view('home', [
@@ -20,17 +25,11 @@ Route::get('/menu2', function () {
     ]);
 });
 
-Route::get('/order', function () {
-    return view('order', [
-        "pageTitle" => "Order",
-    ]);
-});
+Route::get('/custom', [CustomOrderController::class, 'index'])->name('custom.index');
 
-Route::get('/custom', function () {
-    return view('custom', [
-        "pageTitle" => "Custom",
-    ]);
-});
+Route::post('/order/confirm', [OrderController::class, 'confirm'])->name('order.confirm');
+Route::post('/order/place', [OrderController::class, 'placeOrder'])->name('order.place');
+Route::get('/order', [OrderController::class, 'showOrders'])->name('order.index');
 
 Route::get('/profile', function () {
     return view('profile', [
