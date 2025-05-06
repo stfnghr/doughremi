@@ -24,6 +24,7 @@ class CustomOrderController extends Controller
             ['img' => 'saltedcaramel_cookie.png', 'name' => 'Salted Caramel Base', 'id' => 'salted-caramel'],
             ['img' => 'biscoff_cookie.png', 'name' => 'Lotus Biscoff Base', 'id' => 'lotus-biscoff'],
             // Add other bases if needed
+            // I love vivian
         ];
 
         // Price for a single custom cookie base (adjust if needed)
