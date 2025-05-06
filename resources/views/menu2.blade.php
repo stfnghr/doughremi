@@ -62,13 +62,13 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-8 justify-items-center">
             @php
                 $cookies = [
-                    ['img' => 'chocochip_cookie.png', 'name' => 'Christmas Box'],
-                    ['img' => 'chocolate_cookie.png', 'name' => 'Eid Box'],
-                    ['img' => 'vanilla_cookie.png', 'name' => 'New Year Box'],
-                    ['img' => 'strawberry_cookie.png', 'name' => 'Lunar Box'],
-                    ['img' => 'matcha_cookie.png', 'name' => 'Valentine Box'],
-                    ['img' => 'saltedcaramel_cookie.png', 'name' => 'Easter Box'],
-                    ['img' => 'biscoff_cookie.png', 'name' => 'Halloween Box'],
+                    ['img' => 'christmas.png', 'name' => 'Christmas Box'],
+                    ['img' => 'eid.png', 'name' => 'Eid Box'],
+                    ['img' => 'new_year.png', 'name' => 'New Year Box'],
+                    ['img' => 'lunar.png', 'name' => 'Lunar Box'],
+                    ['img' => 'valentine.png', 'name' => 'Valentine Box'],
+                    ['img' => 'easter.png', 'name' => 'Easter Box'],
+                    ['img' => 'halloween.png', 'name' => 'Halloween Box'],
                 ];
             @endphp
 
@@ -76,7 +76,7 @@
                 <div class="flex flex-col items-center pt-10">
                     <div class="relative w-full max-w-[200px]">
                         <div
-                            class="absolute -top-15 left-1/2 transform -translate-x-1/2 w-40 h-40 flex items-center justify-center z-10">
+                            class="absolute -top-35 left-1/2 transform -translate-x-1/2 w-75 h-75 flex items-center justify-center z-10">
                             <img src="{{ asset('images/' . $cookie['img']) }}" alt="{{ $cookie['name'] }} Cookie"
                                 class="object-contain max-h-36" />
                         </div>
