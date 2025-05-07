@@ -1,3 +1,4 @@
+{{-- File: resources/views/home.blade.php --}}
 <x-layout>
     <x-slot:layoutTitle>{{ $pageTitle }}</x-slot:layoutTitle>
     <x-slot:headTitle>Home</x-slot:headTitle>
@@ -18,10 +19,11 @@
                     Create your own custom cookie here!
                 </p>
 
-                <button
-                    class="bg-[#A4B38C] hover:bg-[#98A97B] text-[#FAF5F2] font-bold shadow-md py-2 px-6 rounded-4xl mt-5 transition-colors duration-300">
-                    <a href="/menu1">TRY IT</a>
-                </button>
+                {{-- MODIFIED "TRY IT" BUTTON --}}
+                <a href="{{ route('start.customization') }}"
+                    class="inline-block bg-[#A4B38C] hover:bg-[#98A97B] text-[#FAF5F2] font-bold shadow-md py-2 px-6 rounded-4xl mt-5 transition-colors duration-300">
+                    TRY IT
+                </a>
             </div>
 
             <img src="{{ asset('images/douremi_cookies.png') }}" alt="cookie" class="w-100">
@@ -214,5 +216,4 @@
                 class="w-full h-full object-cover">
         </div>
     </div>
-
 </x-layout>

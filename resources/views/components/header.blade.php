@@ -26,6 +26,11 @@
                     ORDER
                 </a>
 
+                <a href="/order/confirm"
+                    class="{{ request()->is('cart') ? ' font-bold' : '' }} rounded-md px-3 py-2 text-md hover:text-[#F0C672]">
+                    CART
+                </a>
+
                 <a href="/profile" class="p-2 rounded-full hover:bg-[#e8d9c5] transition">
                     <svg width="26" height="26" viewBox="0 0 50 50" fill="none"
                         xmlns="http://www.w3.org/2000/svg">

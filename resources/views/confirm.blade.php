@@ -21,6 +21,21 @@
     @endpush
 
     <div class="container mx-auto px-4 py-8 min-h-screen">
+        {{-- Display Flash Messages --}}
+        @if (session('success_cart_update'))
+            <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
+                role="alert">
+                <strong class="font-bold">Success!</strong>
+                <span class="block sm:inline">{{ session('success_cart_update') }}</span>
+            </div>
+        @endif
+        @if (session('error_cart_update'))
+            <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <strong class="font-bold">Error!</strong>
+                <span class="block sm:inline">{{ session('error_cart_update') }}</span>
+            </div>
+        @endif
+
         <div class="flex flex-col md:flex-row gap-8 max-w-4xl mx-auto">
             {{-- Left Column: Order Items Summary --}}
             <div class="md:w-2/3 bg-[#FBF5EF] p-6 rounded-2xl shadow-md border border-gray-200">
@@ -31,24 +46,40 @@
                     <ul class="space-y-4">
                         @foreach ($cartItems as $item)
                             <li
-                                class="flex justify-between items-center border-b border-gray-300/50 pb-3 last:border-b-0">
-                                <div>
+                                class="flex justify-between items-start border-b border-gray-300/50 pb-3 last:border-b-0">
+                                <div class="flex-grow">
                                     <span class="font-medium block"
                                         style="color: #6b4f4f;">{{ $item['name'] ?? 'Unknown Item' }}</span>
                                     <span class="text-sm text-gray-600 block">Quantity:
                                         {{ $item['quantity'] ?? 1 }}</span>
+                                    {{-- Display image if available --}}
+                                    @if (isset($item['image_filename']))
+                                    <img src="{{ asset('images/' . $item['image_filename']) }}" alt="{{ $item['name'] ?? 'Item' }}" class="w-16 h-16 object-contain mt-1 rounded">
+                                    @endif
                                 </div>
-                                <span class="font-semibold text-lg" style="color: #6b4f4f;">
-                                    @php
-                                        $subtotal =
-                                            isset($item['price'], $item['quantity']) &&
-                                            is_numeric($item['price']) &&
-                                            is_numeric($item['quantity'])
-                                                ? $item['price'] * $item['quantity']
-                                                : 0;
-                                    @endphp
-                                    IDR {{ number_format($subtotal, 0, ',', '.') }}
-                                </span>
+                                <div class="text-right ml-4">
+                                    <span class="font-semibold text-lg block" style="color: #6b4f4f;">
+                                        @php
+                                            $subtotal =
+                                                isset($item['price'], $item['quantity']) &&
+                                                is_numeric($item['price']) &&
+                                                is_numeric($item['quantity'])
+                                                    ? $item['price'] * $item['quantity']
+                                                    : 0;
+                                        @endphp
+                                        IDR {{ number_format($subtotal, 0, ',', '.') }}
+                                    </span>
+                                    {{-- Remove Item Form --}}
+                                    <form action="{{ route('cart.remove') }}" method="POST" class="mt-1">
+                                        @csrf
+                                        <input type="hidden" name="cart_item_id" value="{{ $item['cart_item_id'] }}">
+                                        <button type="submit"
+                                            class="text-xs text-red-500 hover:text-red-700 underline"
+                                            onclick="return confirm('Are you sure you want to remove this item?');">
+                                            Remove
+                                        </button>
+                                    </form>
+                                </div>
                             </li>
                         @endforeach
                     </ul>
@@ -79,10 +110,8 @@
 
                 {{-- Form to Place the Order --}}
                 @if (isset($cartItems) && count($cartItems) > 0)
-                    {{-- Removed onsubmit JS confirmation --}}
                     <form action="{{ route('order.place') }}" method="POST" class="mt-6">
                         @csrf
-                        {{-- Renamed button text --}}
                         <button type="submit"
                             class="w-full text-white font-bold py-3 px-4 rounded-lg transition duration-300 hover:shadow-lg"
                             style="background-color: #a07d6a;" onmouseover="this.style.backgroundColor='#8a6c5a'"
@@ -102,7 +131,4 @@
             </div>
         </div>
     </div>
-
-    {{-- No specific JS needed here anymore for confirmation --}}
-
 </x-layout>
