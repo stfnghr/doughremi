@@ -28,7 +28,7 @@ Route::get('/welcome', function () {
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/menu1', [MenuController::class, 'menu1'])->name('menu.menu1');
 Route::get('/menu2', [MenuController::class, 'menu2'])->name('menu.menu2');
-
+Route::get('/orders/clear', [OrderController::class, 'clearOrderHistory'])->name('order.clearHistory');
 // Route for the "TRY IT" button logic
 Route::get('/start-customization', [CustomOrderController::class, 'startCustomization'])->name('start.customization');
 Route::get('/custom', [CustomOrderController::class, 'index'])->name('custom.index');
