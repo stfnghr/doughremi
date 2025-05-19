@@ -141,7 +141,7 @@
                         </a>
                     </div>
                      <div class="text-center mt-2"> {{-- Added another link to browse menus --}}
-                        <a href="{{ route('menu.menu1') }}" class="text-sm"
+                        <a href="/menu1" class="text-sm"
                             style="color: #a07d6a; text-decoration: underline;"
                             onmouseover="this.style.textDecoration='none'"
                             onmouseout="this.style.textDecoration='underline'">
@@ -156,7 +156,7 @@
                 <div class="empty-cart-card">
                     <h2>Your Cart is Empty!</h2>
                     <p>Looks like you haven't added any delicious cookies to your cart yet.</p>
-                    <a href="{{ route('menu.menu1') }}" class="action-button">Browse Our Menus</a>
+                    <a href="/menu1" class="action-button">Browse Our Menus</a>
                     <p class="mt-4 text-sm">Or <a href="{{ route('custom.index') }}" class="text-[#a07d6a] underline hover:text-[#8a6c5a]">create a custom cookie!</a></p>
                 </div>
             </div>

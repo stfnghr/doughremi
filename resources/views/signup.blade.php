@@ -1,7 +1,6 @@
-{{-- File: resources/views/login.blade.php --}}
 <x-layout>
     <x-slot:layoutTitle>{{ $pageTitle }}</x-slot:layoutTitle>
-    <x-slot:headTitle>Login</x-slot:headTitle>
+    <x-slot:headTitle>Sign Up</x-slot:headTitle>
 
     @push('styles')
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,7 +12,7 @@
                 font-family: 'Quicksand', sans-serif;
                 background-color: #FAF5F2; /* Light background for the page */
             }
-            .login-container {
+            .signup-container {
                 max-width: 400px;
                 margin: 5rem auto; /* Center the form vertically and horizontally */
                 padding: 2rem;
@@ -22,7 +21,7 @@
                 box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
                 border: 1px solid #e5dcd4;
             }
-            .login-title {
+            .signup-title {
                 font-family: 'Coiny', cursive;
                 color: #783F12; /* Dough Re-Mi brown */
                 text-align: center;
@@ -79,8 +78,8 @@
         </style>
     @endpush
 
-    <div class="login-container">
-        <h1 class="login-title">Login</h1>
+    <div class="signup-container">
+        <h1 class="signup-title">Sign Up</h1>
 
         @if (session('info'))
             <div class="mb-4 p-3 bg-blue-100 border border-blue-300 text-blue-700 rounded-md text-sm">
@@ -94,7 +93,7 @@
         @endif
 
 
-        <form action="{{ route('login') }}" method="POST">
+        <form action="{{ route('signup') }}" method="POST">
             @csrf
             <div>
                 <label for="email" class="form-label">Email</label>
@@ -108,21 +107,31 @@
             </div>
 
             <div>
+                <label for="name" class="form-label">Name</label>
+                <input 
+                    type="text" 
+                    name="name" 
+                    id="name" 
+                    class="form-input" 
+                    placeholder="Enter your name"
+                    required />
+            </div>
+
+            <div>
                 <label for="password" class="form-label">Password</label>
                 <input 
                     type="password" 
                     name="password" 
                     id="password" 
                     class="form-input" 
-                    placeholder="Enter your password"
+                    placeholder="Make a password (max 8 characters)"
                     required />
             </div>
-
-            <button type="submit" class="submit-btn">Log In</button>
+            <button type="submit" class="submit-btn">Sign Up</button>
         </form>
 
         <div class="extra-links">
-            <p>Don't have an account? <a href="/signup">Sign Up</a></p>
+            <p>Already have an account? <a href="/login">Login</a></p>
             <a href="/">← Back to Home</a>
         </div>
     </div>

@@ -3,27 +3,46 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\View\View; // Import the View class
+use App\Models\Menu; // Import your Menu model
+use Illuminate\View\View;
 
 class MenuController extends Controller
 {
     /**
-     * Display the Menu 1 page.
+     * Display the "Sweet Pick" menu page.
+     *
+     * @return \Illuminate\View\View
      */
-    public function menu1(): View // Specify the return type
+    public function sweetPick(): View
     {
-        return view('menu1', [ // Assumes view is menu1.blade.php
-           'pageTitle' => 'Sweet Pick' // Example data
+        $sweetPickMenus = Menu::where('categories', 'Sweet Pick')->get();
+
+        $sweetPickPrice = 10000; 
+
+        return view('menu1', [
+            'pageTitle' => 'Sweet Pick',
+            'headTitle' => 'Sweet Pick Menus',
+            'cookies' => $sweetPickMenus, 
+            'sweetPickPrice' => $sweetPickPrice 
         ]);
     }
 
     /**
-     * Display the Menu 2 page.
+     * Display the "Joy Box" menu page (Example for menu2).
+     *
+     * @return \Illuminate\View\View
      */
-    public function menu2(): View // Specify the return type
+    public function joyBox(): View
     {
-         return view('menu2', [ // Assumes view is menu2.blade.php
-             'pageTitle' => 'Joy Box' // Example data
-         ]);
+        $joyBoxMenus = Menu::where('categories', 'Joy Box')->get();
+        
+        $joyBoxPrice = 250000; 
+
+        return view('menu2', [
+            'pageTitle' => 'Joy Box',
+            'headTitle' => 'Joy Box Menus',
+            'cookies' => $joyBoxMenus, 
+            'joyBoxPrice' => $joyBoxPrice 
+        ]);
     }
 }
