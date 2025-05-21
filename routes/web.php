@@ -63,7 +63,7 @@ Route::post('/cart/update-quantity', [OrderController::class, 'updateQuantity'])
 // =========================
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     // Admin Dashboard
-    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/home', [AdminDashboardController::class, 'index'])->name('home');
 
     // --- USER MANAGEMENT (Using Admin/UserController) ---
     // Listing users
@@ -87,16 +87,4 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Delete a user
     Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
-
-
-    // You can also use a resource route for cleaner syntax if your AdminUserController
-    // follows RESTful conventions (index, create, store, show, edit, update, destroy):
-    // Route::resource('users', AdminUserController::class);
-    // This single line would create all the routes above (except you'd need to name them explicitly if you need custom names).
-    // If you use Route::resource, the names will be like 'admin.users.index', 'admin.users.store', etc.
-
-    // Add more admin routes here... for example, managing orders:
-    // Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
-    // Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
-    // ... etc.
 });

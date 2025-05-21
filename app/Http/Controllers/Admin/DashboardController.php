@@ -10,9 +10,6 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Fetch data needed for the admin dashboard
-        // $userCount = User::count();
-        // return view('admin.dashboard', compact('userCount'));
-        return view('admin.dashboard');
+        return view('admin.home');
     }
 }

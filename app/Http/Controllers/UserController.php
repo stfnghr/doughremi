@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User; // Ensure User model is imported
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
-// use Illuminate\Support\Facades\Hash; // Not strictly needed here if model handles hashing
-use Illuminate\Validation\Rules\Password; // Optional: For more complex password rules
+use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
@@ -16,26 +15,28 @@ class UserController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email',
-            'password' => ['required', 'string', Password::min(8)], // Example using Password rule object
-            // If you want password confirmation, add 'confirmed' rule and a 'password_confirmation' field in your form
-            // 'password' => ['required', 'string', Password::min(8), 'confirmed'],
-            'is_admin' => 'sometimes|boolean',
+            'password' => ['required', 'string', Password::defaults()], // Use Password::defaults() for Laravel's recommended rules
+            // If you want password confirmation:
+            // 'password' => ['required', 'string', Password::defaults(), 'confirmed'],
+            'is_admin' => 'sometimes|boolean', // 'sometimes' ensures it's only validated if present
         ]);
 
-        // The User model's setPasswordAttribute mutator (or 'hashed' cast) will handle hashing.
-        // We pass the plain password from the validated data.
+        // The 'hashed' cast in the User model will handle password hashing.
         $user = User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
-            'password' => $validatedData['password'], // Pass the PLAIN password here
-            'is_admin' => $validatedData['is_admin'] ?? false,
+            'password' => $validatedData['password'], // Pass the PLAIN password
+            'is_admin' => $request->boolean('is_admin'), // Use $request->boolean() for cleaner boolean input handling
+            // 'email_verified_at' => now(), // Uncomment if you want to auto-verify on signup
         ]);
 
         // Optional: Log the user in immediately after signup
         // Auth::login($user);
+        // if ($user->isAdmin()) {
+        //     return redirect()->route('admin.dashboard')->with('success', 'Registration successful and logged in!');
+        // }
         // return redirect()->intended('/profile')->with('success', 'Registration successful and logged in!');
 
-        // Or redirect to login page with a success message
         return redirect('/login')->with('success', 'Registration successful! Please log in.');
     }
 
@@ -46,15 +47,18 @@ class UserController extends Controller
             'password' => 'required|string'
         ]);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate(); // Security best practice
-            return redirect()->intended('/profile');
+        if (Auth::attempt($credentials, $request->filled('remember'))) {
+            $request->session()->regenerate();
+            $user = Auth::user();
+            if ($user->isAdmin()) {
+                return redirect()->intended(route('admin.home'))->with('success', 'Welcome back, Admin!');
+            }
+            return redirect()->intended('/profile')->with('success', 'Logged in successfully!');
         }
 
-        // If authentication fails
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
-        ])->onlyInput('email'); // Return only email input to the form for better UX
+        ])->onlyInput('email');
     }
 
     public function logout(Request $request): RedirectResponse

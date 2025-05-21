@@ -36,7 +36,7 @@
 
 <body>
     <div>
-        <h1>Hi, Admin01!</h1>
+        <h1>Hi!</h1>
         <p>What would you like to do?</p>
     </div>
 </body>
