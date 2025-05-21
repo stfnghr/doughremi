@@ -1,6 +1,7 @@
 {{-- File: resources/views/order.blade.php --}}
 
 <x-layout>
+    {{-- Use $pageTitle from controller or provide a default --}}
     <x-slot:layoutTitle>{{ $pageTitle ?? 'Your Orders' }}</x-slot:layoutTitle>
     <x-slot:headTitle>Your Orders</x-slot:headTitle>
 
@@ -12,6 +13,7 @@
         <style>
             body {
                 font-family: 'Quicksand', sans-serif;
+                background-color: #FAF5F2; /* Added consistent page background */
             }
 
             .font-coiny {
@@ -26,7 +28,6 @@
                 margin-bottom: 1rem;
                 cursor: pointer;
                 transition: box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
-                /* Added border-color transition */
             }
 
             .order-card:hover {
@@ -34,9 +35,7 @@
             }
 
             .order-card.active {
-                /* Style for when details are open */
                 border-color: #a07d6a;
-                /* Highlight border */
                 box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
             }
 
@@ -46,30 +45,18 @@
                 border-radius: 0.5rem;
                 padding: 1rem;
                 margin-top: 0.75rem;
-                display: none;
-                /* Initially hidden */
-                /* Add transition for smoother appearance if desired */
-                /* transition: all 0.3s ease-out; */
-                /* opacity: 0; */
-                /* max-height: 0; */
-                /* overflow: hidden; */
+                display: none; /* Initially hidden */
             }
 
             .order-details.active {
-                display: block;
-                /* Show when active */
-                /* opacity: 1; */
-                /* max-height: 1000px; */
-                /* Adjust as needed */
+                display: block; /* Show when active */
             }
 
             .clickable-hint {
-                font-size: 0.75rem;
-                /* 12px */
+                font-size: 0.75rem; /* 12px */
                 color: #a07d6a;
                 text-align: center;
-                margin-top: 0.5rem;
-                /* 8px */
+                margin-top: 0.5rem; /* 8px */
             }
         </style>
     @endpush
@@ -105,13 +92,14 @@
                 <div id="order-list">
                     @foreach ($placedOrders as $index => $order)
                         {{-- Order Summary Card (Clickable) --}}
+                        {{-- The json_encode for items should be safe with this structure --}}
                         <div class="order-card" data-order-index="{{ $index }}"
                             data-order-details="{{ htmlspecialchars(json_encode($order['items']), ENT_QUOTES, 'UTF-8') }}">
 
                             {{-- Order Header --}}
                             <div class="flex justify-between items-center">
                                 <span class="font-semibold text-lg"
-                                    style="color: #6b4f4f;">{{ $order['order_id'] ?? 'Unknown Order' }}</span>
+                                    style="color: #6b4f4f;">{{ $order['order_id'] ?? 'Unknown' }}</span> 
                                 <span
                                     class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($order['timestamp'])->format('M d, Y H:i') }}</span>
                             </div>
@@ -120,11 +108,11 @@
                                 <span class="text-gray-700">Total: <span class="font-bold">IDR
                                         {{ number_format($order['total_amount'] ?? 0, 0, ',', '.') }}</span></span>
                                 <span
-                                    class="text-xs font-medium px-2 py-0.5 rounded {{ $order['status'] === 'Pending Payment' ? 'bg-yellow-200 text-yellow-800' : 'bg-gray-200 text-gray-800' }}">
+                                    class="text-xs font-medium px-2 py-0.5 rounded {{ $order['status'] === 'Pending Payment' ? 'bg-yellow-200 text-yellow-800' : ($order['status'] === 'Completed' ? 'bg-green-200 text-green-800' : 'bg-gray-200 text-gray-800') }}">
                                     {{ $order['status'] ?? 'Unknown' }}
                                 </span>
                             </div>
-                            <div class="clickable-hint">Click to view details</div> {{-- Added Hint --}}
+                            <div class="clickable-hint">Click to view details</div>
 
                             {{-- Details Container (Initially Hidden) --}}
                             <div class="order-details" id="details-{{ $index }}">
@@ -136,11 +124,11 @@
             @else
                 <div class="text-center py-10 bg-[#FBF5EF] rounded-lg shadow">
                     <p class="text-gray-600 text-lg mb-4">You haven't placed any orders yet.</p>
-                    <a href="{{ route('custom.index') }}"
+                    <a href="{{ route('menu.sweetpick') }}" {{-- Link to a menu page instead of custom --}}
                         class="inline-block text-white font-bold py-2 px-4 rounded-lg transition duration-300"
                         style="background-color: #a07d6a;" onmouseover="this.style.backgroundColor='#8a6c5a'"
                         onmouseout="this.style.backgroundColor='#a07d6a'">
-                        Start Customizing
+                        Browse Our Cookies
                     </a>
                 </div>
             @endif
@@ -152,46 +140,39 @@
             document.addEventListener('DOMContentLoaded', function() {
                 const orderList = document.getElementById('order-list');
 
-                if (orderList) { // Check if the list exists
+                if (orderList) {
                     orderList.addEventListener('click', function(event) {
-                        // Find the clicked order card by traversing up from the event target
                         const clickedCard = event.target.closest('.order-card');
-
-                        if (!clickedCard) {
-                            return; // Exit if the click wasn't inside a card
-                        }
+                        if (!clickedCard) return;
 
                         const index = clickedCard.dataset.orderIndex;
                         const detailsContainer = document.getElementById(`details-${index}`);
                         const orderDetailsJson = clickedCard.dataset.orderDetails;
-
-                        // --- Toggle Logic ---
                         const isCurrentlyActive = detailsContainer.classList.contains('active');
 
-                        // --- Hide all currently active details first ---
+                        // Hide all currently active details
                         document.querySelectorAll('.order-details.active').forEach(activeDetail => {
                             activeDetail.classList.remove('active');
-                            activeDetail.innerHTML = ''; // Clear content when hiding
+                            activeDetail.innerHTML = '';
                         });
                         document.querySelectorAll('.order-card.active').forEach(activeCard => {
                             activeCard.classList.remove('active');
                         });
 
-                        // --- If the clicked card wasn't the one already active, show its details ---
                         if (!isCurrentlyActive) {
                             try {
                                 const items = JSON.parse(orderDetailsJson);
-                                let detailsHtml =
-                                    '<h4 class="text-md font-semibold mb-3 border-b pb-1" style="color: #8a6c5a;">Order Items:</h4>';
-                                detailsHtml += '<ul class="space-y-2 text-sm">';
+                                let detailsHtml = `
+                                    <h4 class="text-md font-semibold mb-3 border-b pb-1" style="color: #8a6c5a;">Order Items:</h4>
+                                    <ul class="space-y-2 text-sm">
+                                `;
 
                                 if (items && items.length > 0) {
                                     items.forEach(item => {
                                         const name = item.name || 'Unknown Item';
-                                        const quantity = item.quantity || 1;
-                                        const price = item.price || 0;
-                                        const subtotal = (quantity * price);
-                                        // Format currency using Intl.NumberFormat for better localization
+                                        const quantity = parseInt(item.quantity) || 1; // Ensure quantity is a number
+                                        const price = parseFloat(item.price) || 0; // Ensure price is a number
+                                        const subtotal = quantity * price;
                                         const formattedSubtotal = new Intl.NumberFormat('id-ID', {
                                             style: 'currency',
                                             currency: 'IDR',
@@ -199,29 +180,27 @@
                                             maximumFractionDigits: 0
                                         }).format(subtotal);
 
-                                        detailsHtml += `<li class="flex justify-between items-center">
-                                                        <span>${name} (Qty: ${quantity})</span>
-                                                        <span class="font-medium" style="color: #6b4f4f;">${formattedSubtotal}</span>
-                                                    </li>`;
+                                        detailsHtml += `
+                                            <li class="flex justify-between items-center">
+                                                <span>${name} (Qty: ${quantity})</span>
+                                                <span class="font-medium" style="color: #6b4f4f;">${formattedSubtotal}</span>
+                                            </li>
+                                        `;
                                     });
                                 } else {
                                     detailsHtml += '<li>No items found for this order.</li>';
                                 }
-
                                 detailsHtml += '</ul>';
                                 detailsContainer.innerHTML = detailsHtml;
-                                detailsContainer.classList.add('active'); // Show details
-                                clickedCard.classList.add('active'); // Highlight card
-
+                                detailsContainer.classList.add('active');
+                                clickedCard.classList.add('active');
                             } catch (e) {
-                                console.error("Error parsing order details JSON:", e);
-                                detailsContainer.innerHTML =
-                                    '<p class="text-red-600">Error loading order details.</p>';
+                                console.error("Error parsing order details JSON:", e, "JSON String:", orderDetailsJson);
+                                detailsContainer.innerHTML = '<p class="text-red-600">Error loading order details.</p>';
                                 detailsContainer.classList.add('active');
                                 clickedCard.classList.add('active');
                             }
                         }
-                        // If it was already active, it's now hidden because we hid all active details at the start.
                     });
                 }
             });

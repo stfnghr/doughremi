@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+// use Illuminate\Contracts\Auth\MustVerifyEmail; // Uncomment if you implement email verification
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+// use Illuminate\Support\Facades\Hash; // No longer needed here if using 'hashed' cast
 
-class User extends Authenticatable
+class User extends Authenticatable // Optional: implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -15,18 +16,19 @@ class User extends Authenticatable
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $fillable = [
         'name',
         'email',
         'password',
+        'is_admin', // Ensure this is fillable
     ];
 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -34,15 +36,37 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
-    protected function casts(): array
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'is_admin' => 'boolean', // Cast is_admin to boolean
+        'password' => 'hashed',   // Automatically hashes passwords on set & works with create()
+    ];
+
+    /**
+     * Define the relationship with Orders.
+     */
+    public function orders()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->hasMany(Order::class);
     }
+
+    /**
+     * Check if the user is an administrator.
+     *
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return (bool) $this->is_admin; // Explicitly cast to boolean
+    }
+
+    // REMOVE this mutator if you are using the 'hashed' cast for 'password'
+    // public function setPasswordAttribute($password)
+    // {
+    //     $this->attributes['password'] = Hash::make($password);
+    // }
 }

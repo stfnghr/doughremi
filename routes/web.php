@@ -1,38 +1,51 @@
 <?php
 
+use App\Models\User;
+use App\Models\Order;
+use App\Models\OrderItem;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\MenuController;
 use App\Http\Controllers\CustomOrderController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\LoginController;
-use Illuminate\Support\Facades\Session; // Ensure Session is imported if used directly in route closures
+use App\Http\Controllers\UserController; // This is your regular user controller (for login/signup)
+use App\Http\Controllers\MenuController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController; // Alias if needed
+use App\Http\Controllers\Admin\UserController as AdminUserController; // <-- IMPORT YOUR ADMIN USER CONTROLLER
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
-Route::get('/welcome', function () {
-    return view('welcome');
+Route::get('/', function () {
+    return view('home', [
+        "pageTitle" => "Home"
+    ]);
 });
 
-// Home, Menu, Custom Routes
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/menu1', [MenuController::class, 'menu1'])->name('menu.menu1');
-Route::get('/menu2', [MenuController::class, 'menu2'])->name('menu.menu2');
+//Login Route
+Route::get('/login', function () {
+    return view('login', [
+        "pageTitle" => "Log In"
+    ]);
+});
+Route::post('/login', [UserController::class, 'login'])->name('login');
+
+// Signup Route
+Route::get('/signup', function () {
+    return view('signup', [
+        "pageTitle" => "Sign Up"
+    ]);
+});
+Route::post('/signup', [UserController::class, 'signup'])->name('signup');
+
+// Logout Route
+Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+
+// Profile Pages Routes
+Route::get('/profile', [ProfileController::class, 'index'])->middleware('auth')->name('profile');
+
+Route::get('/menu1', [MenuController::class, 'sweetPick'])->name('menu.sweetpick');
+Route::get('/menu2', [MenuController::class, 'joyBox'])->name('menu.joybox');
+
 Route::get('/orders/clear', [OrderController::class, 'clearOrderHistory'])->name('order.clearHistory');
-// Route for the "TRY IT" button logic
 Route::get('/start-customization', [CustomOrderController::class, 'startCustomization'])->name('start.customization');
 Route::get('/custom', [CustomOrderController::class, 'index'])->name('custom.index');
-
 
 // Cart and Order Process Pages
 Route::get('/cart', [OrderController::class, 'confirm'])->name('cart.show');
@@ -43,21 +56,35 @@ Route::get('/order', [OrderController::class, 'showOrders'])->name('order.index'
 // Cart Item Management
 Route::get('/cart/add', [OrderController::class, 'addItemToCart'])->name('cart.add');
 Route::post('/cart/remove', [OrderController::class, 'removeItem'])->name('cart.remove');
+Route::post('/cart/update-quantity', [OrderController::class, 'updateQuantity'])->name('cart.update.quantity');
 
+// =========================
+// ADMIN ROUTES
+// =========================
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Admin Dashboard
+    Route::get('/home', [AdminDashboardController::class, 'index'])->name('home');
 
-// Mock Login, Logout, and Profile Routes
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login.show');
-Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout.submit');
-Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    // --- USER MANAGEMENT (Using Admin/UserController) ---
+    // Listing users
+    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
 
-// Dashboard
-Route::get('/dashboard', function () {
-    if (!Session::has('mock_user')) {
-        return redirect()->route('login.show')->with('info', 'Please log in to view the dashboard.');
-    }
-    // This is a very basic mock dashboard page content
-    $userName = Session::get('mock_user')['name'] ?? 'Guest';
-    $logoutForm = "<form method='POST' action='".route('logout.submit')."'>".csrf_field()."<button type='submit' style='padding:5px 10px; background-color: #c0392b; color:white; border:none; border-radius:4px; cursor:pointer;'>Logout</button></form>";
-    return "<h1>Mock Dashboard</h1><p>Welcome, " . htmlspecialchars($userName) . "!</p>" . $logoutForm;
-})->name('dashboard');
+    // Show form to create a new user
+    Route::get('/users/create', [AdminUserController::class, 'create'])->name('users.create');
+
+    // Store the new user
+    Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
+
+    // Show a specific user (optional, but good for detail views)
+    Route::get('/users/{user}', [AdminUserController::class, 'show'])->name('users.show');
+
+    // Show form to edit a user
+    Route::get('/users/{user}/edit', [AdminUserController::class, 'edit'])->name('users.edit');
+
+    // Update the user
+    Route::put('/users/{user}', [AdminUserController::class, 'update'])->name('users.update');
+    // You might also use PATCH: Route::patch('/users/{user}', [AdminUserController::class, 'update']);
+
+    // Delete a user
+    Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+});
