@@ -25,8 +25,6 @@ class AdminMiddleware
         //     abort(403, 'Unauthorized action.');
         // }
 
-        $this->command->info('AdminMiddleware: User is ' . (Auth::user()->isAdmin() ? 'an admin' : 'NOT an admin'));
-
         return $next($request);
     }
 }
