@@ -5,22 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @vite('resources/css/app.css')
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Coiny&family=Quicksand:wght@400;500;700&display=swap" rel="stylesheet">
     <title>Custom a Cookie</title>
     <style>
-        .cookie-option {
-            transition: all 0.2s ease;
-            cursor: pointer;
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #FAF5F2; /* Default background */
+            color: #783F12; /* Default text color */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
-
-        .cookie-option:hover {
-            transform: scale(1.05);
-        }
-
-        .cookie-option.selected {
-            border: 2px solid #A4B38C;
-            border-radius: 8px;
-        }
-
+        .font-coiny { font-family: 'Coiny', cursive; }
+        .content-wrapper { flex-grow: 1; }
+        
         .btn-next {
             background-color: #A4B38C;
             color: white;
@@ -66,8 +68,8 @@
         /* Preview styling */
         #cookie-preview {
             position: relative;
-            width: 200px;
-            height: 200px;
+            width: 300px;
+            height: 300px;
             margin: 0 auto;
         }
 
@@ -84,12 +86,53 @@
         #color-preview {
             mix-blend-mode: multiply;
         }
+
+        /* Options preview styling */
+        .options-preview {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .option-thumbnail {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 5px;
+            transition: all 0.2s ease;
+        }
+
+        .option-thumbnail.selected {
+            border-color: #A4B38C;
+        }
+
+        .option-thumbnail:hover {
+            transform: scale(1.1);
+        }
+
+        #shape-options-preview,
+        #color-options-preview {
+            display: none;
+        }
+
+        #shape-options-preview.active,
+        #color-options-preview.active {
+            display: flex;
+        }
     </style>
 </head>
 
 <body>
     <div class="h-screen w-screen bg-[#FAF5F2] p-10 flex">
-        <!-- Left Panel - Options -->
+        <!-- Left Panel - Instructions -->
         <div class="w-1/3 px-10 py-10">
             <a href="/">
                 <div class="flex items-center gap-3 pb-10">
@@ -98,7 +141,37 @@
                 </div>
             </a>
 
-            <h1 class="text-xl font-bold text-[#A4B38C] mb-6" id="step-title">Choose a cookie shape:</h1>
+            <!-- Step 1: Shape Selection -->
+            <div class="step active" id="step-shape">
+                <h1 class="text-xl font-bold text-[#A4B38C] mb-6">Choose a cookie shape:</h1>
+                <p class="text-[#783F12] mb-8">Select your preferred cookie shape from the options in the preview area.
+                </p>
+                <div class="button-group">
+                    <button class="btn-next" id="btn-next-shape">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Color Selection -->
+            <div class="step" id="step-color">
+                <h1 class="text-xl font-bold text-[#A4B38C] mb-6">Choose a cookie color:</h1>
+                <p class="text-[#783F12] mb-8">Select your preferred cookie color from the options in the preview area.
+                </p>
+                <div class="button-group">
+                    <button class="btn-back" id="btn-back-color">Back</button>
+                    <button class="btn-next" id="btn-next-color">Next</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel - Display with Selection Options -->
+        <div class="w-2/3 h-auto bg-[#EFE5D9] rounded-[35px] flex items-center justify-center p-4 relative">
+            <div id="main-cookie-display" class="text-center">
+                <div id="cookie-preview">
+                    <img src="{{ asset('images/circle.png') }}" alt="Shape Preview" id="shape-preview">
+                    <img src="{{ asset('images/circle_basic.png') }}" alt="Color Preview" id="color-preview">
+                </div>
+                <p class="text-[#783F12] mt-4 text-xl" id="cookie-description">Circle - Basic</p>
+            </div>
 
             @php
                 $cookieShapes = [
@@ -133,50 +206,22 @@
                 ];
             @endphp
 
-            <!-- Step 1: Shape Selection -->
-            <div class="step active" id="step-shape">
-                <div class="mb-8">
-                    <h2 class="text-lg font-semibold text-[#783F12] mb-4">Shape:</h2>
-                    <div class="flex flex-wrap gap-4" id="shape-options">
-                        @foreach ($cookieShapes as $index => $cookieShape)
-                            <div class="cookie-option shape-option p-2 {{ $index === 0 ? 'selected' : '' }}"
-                                data-shape="{{ $cookieShape['name'] }}"
-                                data-img="{{ asset('images/' . $cookieShape['img']) }}">
-                                <img src="{{ asset('images/' . $cookieShape['img']) }}" alt="{{ $cookieShape['name'] }}"
-                                    class="w-20 h-20 object-contain">
-                                <p class="text-center mt-2 text-[#783F12]">{{ $cookieShape['name'] }}</p>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-                <div class="button-group">
-                    <button class="btn-next" id="btn-next-shape">Next</button>
-                </div>
+            <!-- Shape options preview -->
+            <div class="options-preview active" id="shape-options-preview">
+                @foreach ($cookieShapes as $index => $cookieShape)
+                    <img src="{{ asset('images/' . $cookieShape['img']) }}" alt="{{ $cookieShape['name'] }}"
+                        class="option-thumbnail {{ $index === 0 ? 'selected' : '' }}"
+                        data-shape="{{ $cookieShape['name'] }}" data-img="{{ asset('images/' . $cookieShape['img']) }}">
+                @endforeach
             </div>
 
-            <!-- Step 2: Color Selection -->
-            <div class="step" id="step-color">
-                <div class="mb-8">
-                    <h2 class="text-lg font-semibold text-[#783F12] mb-4">Color:</h2>
-                    <div class="flex flex-wrap gap-4" id="color-options">
-                        <!-- Will be populated by JavaScript -->
-                    </div>
-                </div>
-                <div class="button-group">
-                    <button class="btn-back" id="btn-back-color">Back</button>
-                    <button class="btn-next" id="btn-next-color">Next</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Panel - Display -->
-        <div class="w-2/3 h-auto bg-[#EFE5D9] rounded-[35px] flex items-center justify-center p-4">
-            <div id="main-cookie-display" class="text-center">
-                <div id="cookie-preview">
-                    <img src="{{ asset('images/' . $cookieShapes[0]['img']) }}" alt="Shape Preview" id="shape-preview">
-                    <img src="{{ asset('images/' . $circleCookies[0]['img']) }}" alt="Color Preview" id="color-preview">
-                </div>
-                <p class="text-[#783F12] mt-4 text-xl" id="cookie-description">Circle - Basic</p>
+            <!-- Color options preview -->
+            <div class="options-preview" id="color-options-preview">
+                @foreach ($circleCookies as $index => $color)
+                    <img src="{{ asset('images/' . $color['img']) }}" alt="{{ $color['name'] }}"
+                        class="option-thumbnail {{ $index === 0 ? 'selected' : '' }}"
+                        data-color="{{ $color['name'] }}" data-img="{{ asset('images/' . $color['img']) }}">
+                @endforeach
             </div>
         </div>
     </div>
@@ -191,38 +236,42 @@
             };
 
             // DOM Elements
-            const stepTitle = document.getElementById('step-title');
             const stepShape = document.getElementById('step-shape');
             const stepColor = document.getElementById('step-color');
             const btnNextShape = document.getElementById('btn-next-shape');
             const btnNextColor = document.getElementById('btn-next-color');
             const btnBackColor = document.getElementById('btn-back-color');
-            const shapeOptions = document.querySelectorAll('.shape-option');
-            const colorOptions = document.getElementById('color-options');
             const shapePreview = document.getElementById('shape-preview');
             const colorPreview = document.getElementById('color-preview');
             const cookieDescription = document.getElementById('cookie-description');
+            const shapeOptionsPreview = document.getElementById('shape-options-preview');
+            const colorOptionsPreview = document.getElementById('color-options-preview');
 
             // Current selection
             let currentShape = 'Circle';
             let currentColor = 'Basic';
+            let currentShapeImg = "{{ asset('images/circle.png') }}";
+            let currentColorImg = "{{ asset('images/circle_basic.png') }}";
 
             // Initialize with default shape
             updateColorOptions('Circle');
 
             // Shape selection handler
-            shapeOptions.forEach(option => {
+            document.querySelectorAll('#shape-options-preview .option-thumbnail').forEach(option => {
                 option.addEventListener('click', function() {
                     // Update selected state
-                    shapeOptions.forEach(opt => opt.classList.remove('selected'));
+                    document.querySelectorAll('#shape-options-preview .option-thumbnail').forEach(
+                        thumb => {
+                            thumb.classList.remove('selected');
+                        });
                     this.classList.add('selected');
 
                     // Get selected shape
                     currentShape = this.dataset.shape;
-                    const shapeImg = this.dataset.img;
+                    currentShapeImg = this.dataset.img;
 
                     // Update preview
-                    shapePreview.src = shapeImg;
+                    shapePreview.src = currentShapeImg;
                     cookieDescription.textContent = `${currentShape} - ${currentColor}`;
                 });
             });
@@ -231,7 +280,8 @@
             btnNextShape.addEventListener('click', function() {
                 stepShape.classList.remove('active');
                 stepColor.classList.add('active');
-                stepTitle.textContent = `Choose a color for your ${currentShape} cookie:`;
+                shapeOptionsPreview.classList.remove('active');
+                colorOptionsPreview.classList.add('active');
                 updateColorOptions(currentShape);
             });
 
@@ -239,52 +289,113 @@
             btnBackColor.addEventListener('click', function() {
                 stepColor.classList.remove('active');
                 stepShape.classList.add('active');
-                stepTitle.textContent = `Choose a cookie shape:`;
+                colorOptionsPreview.classList.remove('active');
+                shapeOptionsPreview.classList.add('active');
+            });
+
+            // Color selection handler
+            document.querySelectorAll('#color-options-preview .option-thumbnail').forEach(option => {
+                option.addEventListener('click', function() {
+                    // Update selected state
+                    document.querySelectorAll('#color-options-preview .option-thumbnail').forEach(
+                        thumb => {
+                            thumb.classList.remove('selected');
+                        });
+                    this.classList.add('selected');
+
+                    // Get selected color
+                    currentColor = this.dataset.color;
+                    currentColorImg = this.dataset.img;
+
+                    // Update preview
+                    colorPreview.src = currentColorImg;
+                    cookieDescription.textContent = `${currentShape} - ${currentColor}`;
+                });
             });
 
             // Update color options based on selected shape
             function updateColorOptions(shape) {
-                colorOptions.innerHTML = '';
+                colorOptionsPreview.innerHTML = '';
                 const colors = shape === 'Circle' ? cookieOptions.circle : cookieOptions.heart;
 
                 colors.forEach((color, index) => {
-                    const colorDiv = document.createElement('div');
-                    colorDiv.className = `cookie-option color-option p-2 ${index === 0 ? 'selected' : ''}`;
-                    colorDiv.dataset.color = color.name;
-                    colorDiv.dataset.img = `{{ asset('images/') }}/${color.img}`;
+                    const colorThumb = document.createElement('img');
+                    colorThumb.src = `{{ asset('images/') }}/${color.img}`;
+                    colorThumb.alt = color.name;
+                    colorThumb.className = `option-thumbnail ${index === 0 ? 'selected' : ''}`;
+                    colorThumb.dataset.color = color.name;
+                    colorThumb.dataset.img = `{{ asset('images/') }}/${color.img}`;
 
-                    colorDiv.innerHTML = `
-                        <img src="{{ asset('images/') }}/${color.img}" 
-                             alt="${color.name}" 
-                             class="w-20 h-20 object-contain">
-                        <p class="text-center mt-2 text-[#783F12]">${color.name}</p>
-                    `;
-
-                    colorDiv.addEventListener('click', function() {
-                        document.querySelectorAll('.color-option').forEach(opt => opt.classList
-                            .remove('selected'));
+                    colorThumb.addEventListener('click', function() {
+                        document.querySelectorAll('#color-options-preview .option-thumbnail')
+                            .forEach(thumb => {
+                                thumb.classList.remove('selected');
+                            });
                         this.classList.add('selected');
 
                         currentColor = this.dataset.color;
-                        colorPreview.src = this.dataset.img;
+                        currentColorImg = this.dataset.img;
+                        colorPreview.src = currentColorImg;
                         cookieDescription.textContent = `${currentShape} - ${currentColor}`;
                     });
 
-                    colorOptions.appendChild(colorDiv);
+                    colorOptionsPreview.appendChild(colorThumb);
                 });
 
                 // Reset to first color
                 if (colors.length > 0) {
                     currentColor = colors[0].name;
-                    colorPreview.src = `{{ asset('images/') }}/${colors[0].img}`;
+                    currentColorImg = `{{ asset('images/') }}/${colors[0].img}`;
+                    colorPreview.src = currentColorImg;
                     cookieDescription.textContent = `${currentShape} - ${currentColor}`;
                 }
             }
 
-            // Next button for color selection
+            // Next button for color selection - redirect to confirm page
             btnNextColor.addEventListener('click', function() {
-                alert(`Your ${currentShape} ${currentColor} cookie has been selected!`);
-                // Proceed to next step (e.g., toppings, packaging)
+                // Create a form to submit the data
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = "{{ route('order.confirm') }}";
+
+                // Add CSRF token
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = "{{ csrf_token() }}";
+                form.appendChild(csrfToken);
+
+                // Add shape data
+                const shapeInput = document.createElement('input');
+                shapeInput.type = 'hidden';
+                shapeInput.name = 'shape';
+                shapeInput.value = currentShape;
+                form.appendChild(shapeInput);
+
+                // Add color data
+                const colorInput = document.createElement('input');
+                colorInput.type = 'hidden';
+                colorInput.name = 'color';
+                colorInput.value = currentColor;
+                form.appendChild(colorInput);
+
+                // Add shape image path
+                const shapeImgInput = document.createElement('input');
+                shapeImgInput.type = 'hidden';
+                shapeImgInput.name = 'shape_img';
+                shapeImgInput.value = currentShapeImg;
+                form.appendChild(shapeImgInput);
+
+                // Add color image path
+                const colorImgInput = document.createElement('input');
+                colorImgInput.type = 'hidden';
+                colorImgInput.name = 'color_img';
+                colorImgInput.value = currentColorImg;
+                form.appendChild(colorImgInput);
+
+                // Submit the form
+                document.body.appendChild(form);
+                form.submit();
             });
         });
     </script>
