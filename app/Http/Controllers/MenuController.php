@@ -12,7 +12,7 @@ class MenuController extends Controller
      * Display the "Sweet Pick" menu page.
      *
      * @return \Illuminate\View\View
-     */
+     */e
     public function sweetPick(): View
     {
         $sweetPickMenus = Menu::where('categories', 'Sweet Pick')->get();
