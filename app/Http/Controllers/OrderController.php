@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use App\Models\Courier; // Assuming you have a Courier model for random courier selection
 use Illuminate\Support\Facades\Auth; // Assuming you might use Auth for customer details
 
 class OrderController extends Controller
@@ -184,6 +185,9 @@ class OrderController extends Controller
             return redirect()->route('order.confirm')->with('error_cart_update', 'Your cart is empty. Cannot place order.');
         }
 
+        $couriers = Courier::all();
+        $randomCourier = $couriers->random();
+
         $orderTotalAmount = 0;
         $processedOrderItems = [];
 
@@ -220,13 +224,13 @@ class OrderController extends Controller
             'status' => 'Pending Payment',
             'customer_name' => Auth::check() ? Auth::user()->name : 'Guest',
             'customer_email' => Auth::check() ? Auth::user()->email : null,
-            'customer_phone' => Auth::check() ? (Auth::user()->phone ?? null) : null, // Assuming user model has phone
             'created_at' => now()->toDateTimeString(), // Added for more standard order data
+            'courier_name' => $randomCourier->name, // Store courier name
+            'courier_phone' => $randomCourier->phone, // Store courier phone
         ];
 
         array_unshift($placedOrders, $newOrder);
         Session::put('placed_orders', $placedOrders);
-        Session::put('latest_order', $newOrder); // Store the latest order separately
         Session::forget('cart');
 
         // Assuming you have a route named 'orders.show' for displaying a single order's details

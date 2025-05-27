@@ -9,8 +9,8 @@ class Courier extends Model
     protected $fillable = ['name',
                             'phone'];
 
-    public function orderItems()
+    public function order()
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->hasMany(Order::class);
     }
 }
