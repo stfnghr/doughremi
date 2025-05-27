@@ -36,10 +36,12 @@
             });
             document.addEventListener('click', function(event) {
                 const dropdownButton = document.getElementById('dropdown-button');
-                const dropdown = dropdownButton.nextElementSibling;
-                if (!dropdownButton.contains(event.target) && !dropdown.contains(event.target)) {
-                    dropdown.classList.add('hidden');
-                    dropdownButton.setAttribute('aria-expanded', 'false');
+                if (dropdownButton) { // Check if dropdownButton exists
+                    const dropdown = dropdownButton.nextElementSibling;
+                    if (dropdown && !dropdownButton.contains(event.target) && !dropdown.contains(event.target)) {
+                        dropdown.classList.add('hidden');
+                        dropdownButton.setAttribute('aria-expanded', 'false');
+                    }
                 }
             });
         </script>
@@ -63,22 +65,34 @@
             @endphp
 
             @foreach ($cookies as $cookie)
-                <a href="{{ route('cart.add', ['id' => $cookie['id'], 'name' => $cookie['name'], 'price' => $cookie['price'], 'image' => $cookie['img'], 'type' => 'sweet-pick']) }}"
-                   class="flex flex-col items-center pt-10 no-underline hover:opacity-80 transition-opacity">
-                    <div class="relative w-full max-w-[200px]">
-                        <div
-                            class="absolute -top-15 left-1/2 transform -translate-x-1/2 w-40 h-40 flex items-center justify-center z-10">
-                            <img src="{{ asset('images/' . $cookie['img']) }}" alt="{{ $cookie['name'] }} Cookie"
-                                class="object-contain max-h-36" />
+                {{-- Each cookie is now a form that submits to cart.add --}}
+                <form action="{{ route('cart.add') }}" method="POST" class="contents"> {{-- Using 'contents' to not break grid layout too much --}}
+                    @csrf
+                    <input type="hidden" name="id" value="{{ $cookie['id'] }}">
+                    <input type="hidden" name="name" value="{{ $cookie['name'] }}">
+                    <input type="hidden" name="price" value="{{ $cookie['price'] }}">
+                    <input type="hidden" name="image" value="{{ $cookie['img'] }}"> {{-- This should be the image filename --}}
+                    <input type="hidden" name="type" value="sweet-pick"> {{-- Or some other appropriate type --}}
+                    
+                    {{-- The button now wraps the visual content of the cookie --}}
+                    <button type="submit"
+                       class="flex flex-col items-center pt-10 no-underline hover:opacity-80 transition-opacity focus:outline-none appearance-none text-left">
+                        <div class="relative w-full max-w-[200px]">
+                            <div
+                                class="absolute -top-15 left-1/2 transform -translate-x-1/2 w-40 h-40 flex items-center justify-center z-10">
+                                <img src="{{ asset('images/' . $cookie['img']) }}" alt="{{ $cookie['name'] }} Cookie"
+                                    class="object-contain max-h-36" />
+                            </div>
+                            <div
+                                class="w-[180px] h-[150px] bg-[#EFE5D9] rounded-[35px] pt-20 flex items-center justify-center p-4">
+                                <p class="text-[#783F12] text-center">{{ $cookie['name'] }}</p>
+                            </div>
                         </div>
-                        <div
-                            class="w-[180px] h-[150px] bg-[#EFE5D9] rounded-[35px] pt-20 flex items-center justify-center p-4">
-                            <p class="text-[#783F12] text-center">{{ $cookie['name'] }}</p>
-                        </div>
-                    </div>
-                </a>
+                    </button>
+                </form>
             @endforeach
 
+            {{-- Link to custom.index remains an <a> tag as it's a navigation --}}
             <a href="{{ route('custom.index') }}" class="flex flex-col items-center pt-10 no-underline hover:opacity-80 transition-opacity">
                 <div class="relative w-full max-w-[200px]">
                     <div
