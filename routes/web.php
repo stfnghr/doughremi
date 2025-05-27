@@ -16,13 +16,27 @@ Route::get('/', function () {
     ]);
 })->name('home'); // Added name for home route
 
-// Login Route (assuming UserController has showLoginForm method for GET)
-Route::get('/login', [UserController::class, 'showLoginForm'])->name('login.form'); // Example: if you have a dedicated method to show form
+// // Login Route (assuming UserController has showLoginForm method for GET)
+// Route::get('/login', [UserController::class, 'showLoginForm'])->name('login.form'); // Example: if you have a dedicated method to show form
+// Route::post('/login', [UserController::class, 'login'])->name('login');
+
+
+// // Signup Route (assuming UserController has showSignupForm method for GET)
+// Route::get('/signup', [UserController::class, 'showSignupForm'])->name('signup.form'); // Example
+// Route::post('/signup', [UserController::class, 'signup'])->name('signup');
+
+// Login Route
+Route::get('/login', function () {
+    return view('login', ['pageTitle' => 'Login']);
+})->name('login.form');
+
 Route::post('/login', [UserController::class, 'login'])->name('login');
 
+// Signup Route
+Route::get('/signup', function () {
+    return view('signup', ['pageTitle' => 'Sign Up']);
+})->name('signup.form');
 
-// Signup Route (assuming UserController has showSignupForm method for GET)
-Route::get('/signup', [UserController::class, 'showSignupForm'])->name('signup.form'); // Example
 Route::post('/signup', [UserController::class, 'signup'])->name('signup');
 
 // Logout Route

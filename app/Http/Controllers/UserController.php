@@ -9,7 +9,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\Rules\Password;
 // use Illuminate\Support\Facades\Hash; // Not strictly needed here if model handles hashing
-use Illuminate\Validation\Rules\Password; // Optional: For more complex password rules
+// use Illuminate\Validation\Rules\Password; // Optional: For more complex password rules
 
 class UserController extends Controller
 {

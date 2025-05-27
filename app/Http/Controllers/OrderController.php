@@ -8,10 +8,25 @@ use Illuminate\Support\Str;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use App\Models\Courier; // Assuming you have a Courier model for random courier selection
-use Illuminate\Support\Facades\Auth; // Assuming you might use Auth for customer details
+use Illuminate\Support\Facades\Auth; // Make sure this is present
 
 class OrderController extends Controller
 {
+    /**
+     * Handles the initial request to start customizing a cookie.
+     * Checks for authentication and redirects accordingly.
+     * This method fulfills the initial requirement.
+     */
+    public function startCustomizationProcess(): RedirectResponse
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('info', 'Please log in to start customizing your cookie!');
+        }
+        // If authenticated, proceed to the customization page
+        // This assumes 'custom.index' is the route name for your cookie customization UI page
+        return redirect()->route('custom.index');
+    }
+
     public function confirm(Request $request): RedirectResponse|View
     {
         $cartItemsFromSession = Session::get('cart', []); // Get initial cart from session
@@ -19,11 +34,11 @@ class OrderController extends Controller
 
         // Handle POST requests
         if ($request->isMethod('post')) {
-            // ACTION 1: Add a new custom cookie
+            // ACTION 1: Add a new custom cookie (from customization page submission)
             if ($request->has('shape') && $request->has('color') && !$request->input('intent')) {
                 $shape = $request->input('shape');
                 $color = $request->input('color');
-                $colorImgPath = $request->input('color_img'); // e.g., 'red.png' or 'custom_cookies/red.png'
+                $colorImgPath = $request->input('color_img');
                 $itemName = "Custom Cookie - {$shape} ({$color})";
                 $newCartItem = [
                     'cart_item_id' => Str::uuid()->toString(),
@@ -35,8 +50,8 @@ class OrderController extends Controller
                     'image_filename' => $colorImgPath ? basename($colorImgPath) : null,
                     'type' => 'custom',
                 ];
-                $cartItemsFromSession[] = $newCartItem; // Add to the current array
-                Session::put('cart', $cartItemsFromSession); // Save updated array to session
+                $cartItemsFromSession[] = $newCartItem;
+                Session::put('cart', $cartItemsFromSession);
                 return redirect()->route('order.confirm')->with('success_cart_update', $itemName . ' added to your order!');
             }
             // ACTION 2: Update quantity of an existing item
@@ -48,43 +63,39 @@ class OrderController extends Controller
 
                 $cartItemIdToUpdate = $validated['cart_item_id'];
                 $changeAmount = (int) $validated['change'];
-                // Get a fresh copy from session to modify
                 $currentCart = Session::get('cart', []);
                 $itemUpdated = false;
                 $updatedItemName = 'Item';
 
-                foreach ($currentCart as $index => &$cartItemInLoop) { // Use reference to modify directly
+                foreach ($currentCart as &$cartItemInLoop) { // Use reference
                     if (isset($cartItemInLoop['cart_item_id']) && $cartItemInLoop['cart_item_id'] === $cartItemIdToUpdate) {
                         $updatedItemName = $cartItemInLoop['name'] ?? 'Item';
                         $currentQuantity = $cartItemInLoop['quantity'] ?? 1;
                         $newQuantity = $currentQuantity + $changeAmount;
 
                         if ($newQuantity < 1) {
-                            $cartItemInLoop['quantity'] = 1; // Keep quantity at 1
+                            $cartItemInLoop['quantity'] = 1;
                             Session::flash('info', 'Quantity for ' . $updatedItemName . ' cannot be less than 1.');
                         } else {
                             $cartItemInLoop['quantity'] = $newQuantity;
                             Session::flash('success_cart_update', 'Quantity for ' . $updatedItemName . ' updated.');
                         }
                         $itemUpdated = true;
-                        break; // Exit loop once item is found and updated
+                        break;
                     }
                 }
+                unset($cartItemInLoop); // Unset reference
 
                 if ($itemUpdated) {
-                    Session::put('cart', $currentCart); // Save the modified cart back to session
+                    Session::put('cart', $currentCart);
                 } else {
                     Session::flash('error_cart_update', 'Could not find the item in your cart to update.');
                 }
-                // Always redirect after a POST action to prevent re-submission on refresh
                 return redirect()->route('order.confirm');
             }
-            // If it's a POST request but doesn't match known actions,
-            // it will fall through to the GET-like behavior below after recalculating cart.
         }
 
-        // This part runs for GET requests or if a POST action wasn't explicitly handled and redirected.
-        // Ensure $cartItems reflects the latest state from the session.
+        // GET request logic or fall-through from unhandled POST
         $cartItems = Session::get('cart', []);
         $totalAmount = 0;
         if (!empty($cartItems)) {
@@ -102,12 +113,9 @@ class OrderController extends Controller
             $headTitle = 'Your Shopping Cart';
         }
 
-        // Logic for "cart is empty" message on GET requests if applicable
-        if (empty($cartItems) && $request->isMethod('get') && Session::hasOldInput()) {
-            // Avoid showing 'cart is empty' if a specific success/error/info message is already set from a previous action
-            if (!Session::has('success_cart_update') && !Session::has('error_cart_update') && !Session::has('info')) {
-                Session::flash('info', 'Your cart is now empty.');
-            }
+        if (empty($cartItems) && $request->isMethod('get') && Session::hasOldInput() &&
+            !Session::has('success_cart_update') && !Session::has('error_cart_update') && !Session::has('info')) {
+            Session::flash('info', 'Your cart is now empty.');
         }
 
         return view('confirm', [
@@ -115,18 +123,23 @@ class OrderController extends Controller
             'headTitle' => $headTitle,
             'cartItems' => $cartItems,
             'totalAmount' => $totalAmount,
-            'pageTitle' => $pageTitle, // Pass for <title> tag in layout
+            'pageTitle' => $pageTitle,
         ]);
     }
 
     public function addItemToCart(Request $request): RedirectResponse
     {
+        // Auth check you added
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('info', 'Please log in to add items to your cart!');
+        }
+
         $validatedData = $request->validate([
             'id' => 'required|string',
             'name' => 'required|string',
             'price' => 'required|numeric|min:0',
-            'image' => 'required|string',      // Should be image_filename
-            'type' => 'sometimes|string',      // e.g., 'standard', 'custom', 'package'
+            'image' => 'required|string',
+            'type' => 'sometimes|string',
         ]);
 
         $cartItems = Session::get('cart', []);
@@ -157,20 +170,19 @@ class OrderController extends Controller
             if (isset($item['cart_item_id']) && $item['cart_item_id'] === $cartItemIdToRemove) {
                 $removedItemName = $item['name'] ?? 'Item';
                 $itemFoundAndRemoved = true;
-                return false; // Exclude this item
+                return false;
             }
-            return true; // Keep this item
+            return true;
         });
 
-        Session::put('cart', array_values($updatedCartItems)); // Re-index array
+        Session::put('cart', array_values($updatedCartItems));
 
         if ($itemFoundAndRemoved) {
+            $message = $removedItemName . ' removed from your order.';
             if (empty(Session::get('cart', []))) {
-                Session::flash('info', 'Your cart is now empty.'); // Set before specific removal message if cart becomes empty
-                Session::flash('success_cart_update', $removedItemName . ' removed from your order.');
-            } else {
-                Session::flash('success_cart_update', $removedItemName . ' removed from your order.');
+                Session::flash('info', 'Your cart is now empty.');
             }
+            Session::flash('success_cart_update', $message);
         } else {
             Session::flash('error_cart_update', 'Could not find the item to remove.');
         }
@@ -186,6 +198,10 @@ class OrderController extends Controller
         }
 
         $couriers = Courier::all();
+        if ($couriers->isEmpty()) {
+            // Handle case where no couriers are available
+            return redirect()->route('order.confirm')->with('error_cart_update', 'Sorry, no couriers are available at the moment. Please try again later.');
+        }
         $randomCourier = $couriers->random();
 
         $orderTotalAmount = 0;
@@ -216,35 +232,43 @@ class OrderController extends Controller
         $orderId = 'ORD-' . strtoupper(Str::random(6)) . '-' . time();
         
         $newOrder = [
-            'id' => $orderId, // Using 'id' for consistency with showOrderDetail
-            'order_id' => $orderId, // Keeping for potential backward compatibility or other uses
+            'id' => $orderId,
+            'order_id' => $orderId,
             'timestamp' => now()->toDateTimeString(),
             'items' => $processedOrderItems,
             'total_amount' => $orderTotalAmount,
             'status' => 'Pending Payment',
             'customer_name' => Auth::check() ? Auth::user()->name : 'Guest',
             'customer_email' => Auth::check() ? Auth::user()->email : null,
-            'created_at' => now()->toDateTimeString(), // Added for more standard order data
-            'courier_name' => $randomCourier->name, // Store courier name
-            'courier_phone' => $randomCourier->phone, // Store courier phone
+            'created_at' => now()->toDateTimeString(),
+            'courier_name' => $randomCourier->name,
+            'courier_phone' => $randomCourier->phone,
         ];
 
         array_unshift($placedOrders, $newOrder);
         Session::put('placed_orders', $placedOrders);
         Session::forget('cart');
 
-        // Assuming you have a route named 'orders.show' for displaying a single order's details
         return redirect()->route('orders.show', ['orderId' => $orderId])
             ->with('success', 'Order placed successfully!');
     }
 
-    public function showOrders(Request $request): View
+    public function showOrders(Request $request): View|RedirectResponse
     {
+        // Auth check you added
+        if (!Auth::check()) {
+            // The message "Please log in to view our Sweet Pick menu!" might be specific.
+            // If this page is strictly for 'Your Orders', a message like:
+            // return redirect()->route('login')->with('info', 'Please log in to view your orders!');
+            // might be more direct. Keeping your original message for now.
+            return redirect()->route('login')->with('info', 'Please log in to view our Sweet Pick menu!');
+        }
+
         $placedOrders = Session::get('placed_orders', []);
 
-        return view('order', [ // Assuming your view for showing orders is 'order.blade.php'
+        return view('order', [
             'pageTitle' => 'Your Orders',
-            'headTitle' => 'Your Orders', // For consistency with confirm view
+            'headTitle' => 'Your Orders',
             'placedOrders' => $placedOrders,
         ]);
     }
@@ -252,16 +276,15 @@ class OrderController extends Controller
     public function showOrderDetail($orderId): View|RedirectResponse
     {
         $placedOrders = Session::get('placed_orders', []);
-        // Find order by 'id' which was set in placeOrder
         $order = collect($placedOrders)->firstWhere('id', $orderId);
 
         if (!$order) {
-            return redirect()->route('order.index')->with('error', 'Order not found');
+            return redirect()->route('orders.index')->with('error', 'Order not found');
         }
 
         return view('orderDetail', [
             'pageTitle' => 'Order Details - ' . $order['id'],
-            'headTitle' => 'Order Details - ' . $order['id'], // For consistency
+            'headTitle' => 'Order Details - ' . $order['id'],
             'order' => $order,
         ]);
     }
@@ -269,89 +292,8 @@ class OrderController extends Controller
     public function clearOrderHistory(Request $request): RedirectResponse
     {
         Session::forget('placed_orders');
-        Session::forget('latest_order'); // Also clear latest_order if you use it
-        return redirect()->route('order.index')->with('info', 'Your order history has been cleared.');
+        Session::forget('latest_order');
+        // Assuming 'orders.index' is the route name for your showOrders method.
+        return redirect()->route('orders.index')->with('info', 'Your order history has been cleared.');
     }
-
-    /*
-    // The updateQuantity method's logic is now integrated into the confirm() method
-    // if the confirm page is the sole place it's used.
-    // Keep it if used elsewhere (e.g., API, admin panel).
-    public function updateQuantity(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'cart_item_id' => 'required|string',
-            'change' => 'required|integer|in:-1,1', // Amount to change quantity by
-        ]);
-
-        $cartItemIdToUpdate = $request->input('cart_item_id');
-        $changeAmount = (int) $request->input('change');
-
-        $cart = Session::get('cart', []);
-        $itemUpdated = false;
-        $itemName = 'Item'; // Default item name for messages
-
-        foreach ($cart as $index => &$cartItem) { // Use reference '&' to modify directly
-            if (isset($cartItem['cart_item_id']) && $cartItem['cart_item_id'] === $cartItemIdToUpdate) {
-                $itemName = $cartItem['name'] ?? 'Item';
-                $currentQuantity = $cartItem['quantity'] ?? 1;
-                $newQuantity = $currentQuantity + $changeAmount;
-
-                if ($newQuantity < 1) {
-                    $cartItem['quantity'] = 1;
-                    Session::flash('info', 'Quantity for ' . $itemName . ' cannot be less than 1.');
-                } else {
-                    $cartItem['quantity'] = $newQuantity;
-                    Session::flash('success_cart_update', 'Quantity for ' . $itemName . ' updated.');
-                }
-                $itemUpdated = true;
-                break;
-            }
-        }
-
-        if ($itemUpdated) {
-            Session::put('cart', $cart);
-        } else {
-            Session::flash('error_cart_update', 'Could not find the item in your cart to update.');
-        }
-
-        return redirect()->route('order.confirm');
-    }
-    */
-
-    /*
-    // The updateCart method's logic might also be superseded if confirm() handles all quantity updates
-    // from the cart UI. Keep if used for other purposes.
-    public function updateCart(Request $request): RedirectResponse
-    {
-        $cartItems = Session::get('cart', []);
-        $updatedCart = [];
-        $itemActioned = false;
-
-        foreach ($cartItems as $item) {
-            if (isset($item['cart_item_id']) && $item['cart_item_id'] === $request->input('cart_item_id')) {
-                $itemActioned = true;
-                $itemName = $item['name'] ?? 'Item';
-                if ($request->input('action') === 'increase') {
-                    $item['quantity'] = ($item['quantity'] ?? 1) + 1;
-                    Session::flash('success_cart_update', 'Quantity for ' . $itemName . ' increased.');
-                } elseif ($request->input('action') === 'decrease') {
-                    $item['quantity'] = ($item['quantity'] ?? 1) - 1;
-                    if ($item['quantity'] < 1) {
-                        Session::flash('success_cart_update', $itemName . ' removed from cart.');
-                        continue; // Skip adding this item back if quantity is 0 or less
-                    }
-                    Session::flash('success_cart_update', 'Quantity for ' . $itemName . ' decreased.');
-                }
-            }
-            $updatedCart[] = $item;
-        }
-        if (!$itemActioned && $request->has('cart_item_id')) { // Only flash error if an attempt was made
-             Session::flash('error_cart_update', 'Could not find item to update.');
-        }
-
-        Session::put('cart', array_values($updatedCart)); // Re-index
-        return redirect()->route('order.confirm');
-    }
-    */
 }
