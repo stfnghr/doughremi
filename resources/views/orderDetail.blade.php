@@ -76,7 +76,7 @@
                     <h2 class="section-title">Courier Information</h2>
                     <div class="mb-4">
                         <p><strong>Name:</strong> {{ $order['courier_name'] ?? 'Courier' }}</p>
-                        <p><strong>Phone:</strong> {{ $order['courier_email'] ?? 'N/A' }}</p>
+                        <p><strong>Phone:</strong> {{ $order['courier_phone'] ?? 'N/A' }}</p>
                     </div>
                 </div>
 
