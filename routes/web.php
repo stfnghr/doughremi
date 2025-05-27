@@ -48,10 +48,28 @@ Route::get('/start-customization', [CustomOrderController::class, 'startCustomiz
 Route::get('/custom', [CustomOrderController::class, 'index'])->name('custom.index');
 
 // Cart and Order Process Pages
+// Route::get('/cart', [OrderController::class, 'confirm'])->name('cart.show');
+// Route::match(['get', 'post'], '/order/confirm', [OrderController::class, 'confirm'])->name('order.confirm');
+// Route::post('/order/place', [OrderController::class, 'placeOrder'])->name('order.place');
+// Route::get('/order', [OrderController::class, 'showOrders'])->name('order.index');
 Route::get('/cart', [OrderController::class, 'confirm'])->name('cart.show');
 Route::match(['get', 'post'], '/order/confirm', [OrderController::class, 'confirm'])->name('order.confirm');
 Route::post('/order/place', [OrderController::class, 'placeOrder'])->name('order.place');
-Route::get('/order', [OrderController::class, 'showOrders'])->name('order.index');
+Route::get('/orders', [OrderController::class, 'showOrders'])->name('orders.index'); // Changed from order.index to orders.index
+Route::get('/orders/{orderId}', [OrderController::class, 'showOrderDetail'])->name('orders.show'); // New route for order details
+
+// Order Detail Routes
+Route::get('/orderDetail/{id}', function ($id) {
+    $orderDetail = OrderDetail::with('menu', 'order')->find($id);
+    if (!$orderDetail) {
+        abort(404, 'Order not found');
+    }
+
+    return view('orderDetail', [
+        'pageTitle' => 'Order Detail',
+        'orderDetail' => $orderDetail
+    ]);
+});
 
 // Cart Item Management
 Route::get('/cart/add', [OrderController::class, 'addItemToCart'])->name('cart.add');

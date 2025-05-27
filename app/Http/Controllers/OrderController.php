@@ -183,88 +183,174 @@ class OrderController extends Controller
     }
 
 
+    // public function placeOrder(Request $request): RedirectResponse
+    // {
+    //     $cartItemsFromSession = Session::get('cart', []);
+
+    //     if (empty($cartItemsFromSession)) {
+    //         // Redirect to confirm page or menu, as custom.index might not be the best place if cart is just empty
+    //         return redirect()->route('order.confirm')->with('error_cart_update', 'Your cart is empty. Cannot place order.');
+    //     }
+
+    //     $orderTotalAmount = 0;
+    //     $processedOrderItems = [];
+
+    //     foreach ($cartItemsFromSession as $cartItem) {
+    //         $name = $cartItem['name'] ?? 'Unknown Item';
+    //         $quantity = isset($cartItem['quantity']) && is_numeric($cartItem['quantity']) ? (int)$cartItem['quantity'] : 1;
+    //         $price = isset($cartItem['price']) && is_numeric($cartItem['price']) ? (float)$cartItem['price'] : 0;
+    //         $image = $cartItem['image_filename'] ?? null;
+    //         $type = $cartItem['type'] ?? 'standard'; // Capture type
+
+    //         $processedOrderItems[] = [
+    //             'name' => $name,
+    //             'quantity' => $quantity,
+    //             'price' => $price, // Price per unit
+    //             'image' => $image,
+    //             'type' => $type,
+    //         ];
+    //         $orderTotalAmount += $quantity * $price;
+    //     }
+
+    //     if (empty($processedOrderItems)) {
+    //          return redirect()->route('order.confirm')->with('error_cart_update', 'Could not process items in your cart for the order.');
+    //     }
+
+    //     $placedOrders = Session::get('placed_orders', []);
+    //     $newOrder = [
+    //         'order_id' => 'ORD-' . strtoupper(Str::random(6)) . '-' . time(),
+    //         'timestamp' => now()->toDateTimeString(),
+    //         'items' => $processedOrderItems,
+    //         'total_amount' => $orderTotalAmount,
+    //         'status' => 'Pending Payment' // Default status
+    //     ];
+
+    //     array_unshift($placedOrders, $newOrder);
+    //     Session::put('placed_orders', $placedOrders);
+    //     Session::forget('cart'); // Clear the current cart
+
+    //     return redirect()->route('order.index')->with('success', 'Order placed successfully! View details below.');
+    // }
     public function placeOrder(Request $request): RedirectResponse
-    {
-        $cartItemsFromSession = Session::get('cart', []);
+{
+    $cartItemsFromSession = Session::get('cart', []);
 
-        if (empty($cartItemsFromSession)) {
-            // Redirect to confirm page or menu, as custom.index might not be the best place if cart is just empty
-            return redirect()->route('order.confirm')->with('error_cart_update', 'Your cart is empty. Cannot place order.');
-        }
+    if (empty($cartItemsFromSession)) {
+        return redirect()->route('order.confirm')->with('error_cart_update', 'Your cart is empty. Cannot place order.');
+    }
 
-        $orderTotalAmount = 0;
-        $processedOrderItems = [];
+    $orderTotalAmount = 0;
+    $processedOrderItems = [];
 
-        foreach ($cartItemsFromSession as $cartItem) {
-            $name = $cartItem['name'] ?? 'Unknown Item';
-            $quantity = isset($cartItem['quantity']) && is_numeric($cartItem['quantity']) ? (int)$cartItem['quantity'] : 1;
-            $price = isset($cartItem['price']) && is_numeric($cartItem['price']) ? (float)$cartItem['price'] : 0;
-            $image = $cartItem['image_filename'] ?? null;
-            $type = $cartItem['type'] ?? 'standard'; // Capture type
+    foreach ($cartItemsFromSession as $cartItem) {
+        $name = $cartItem['name'] ?? 'Unknown Item';
+        $quantity = isset($cartItem['quantity']) && is_numeric($cartItem['quantity']) ? (int)$cartItem['quantity'] : 1;
+        $price = isset($cartItem['price']) && is_numeric($cartItem['price']) ? (float)$cartItem['price'] : 0;
+        $image = $cartItem['image_filename'] ?? null;
+        $type = $cartItem['type'] ?? 'standard';
 
-            $processedOrderItems[] = [
-                'name' => $name,
-                'quantity' => $quantity,
-                'price' => $price, // Price per unit
-                'image' => $image,
-                'type' => $type,
-            ];
-            $orderTotalAmount += $quantity * $price;
-        }
-
-        if (empty($processedOrderItems)) {
-             return redirect()->route('order.confirm')->with('error_cart_update', 'Could not process items in your cart for the order.');
-        }
-
-        $placedOrders = Session::get('placed_orders', []);
-        $newOrder = [
-            'order_id' => 'ORD-' . strtoupper(Str::random(6)) . '-' . time(),
-            'timestamp' => now()->toDateTimeString(),
-            'items' => $processedOrderItems,
-            'total_amount' => $orderTotalAmount,
-            'status' => 'Pending Payment' // Default status
+        $processedOrderItems[] = [
+            'name' => $name,
+            'quantity' => $quantity,
+            'price' => $price,
+            'image' => $image,
+            'type' => $type,
         ];
-
-        array_unshift($placedOrders, $newOrder);
-        Session::put('placed_orders', $placedOrders);
-        Session::forget('cart'); // Clear the current cart
-
-        return redirect()->route('order.index')->with('success', 'Order placed successfully! View details below.');
+        $orderTotalAmount += $quantity * $price;
     }
 
+    if (empty($processedOrderItems)) {
+        return redirect()->route('order.confirm')->with('error_cart_update', 'Could not process items in your cart for the order.');
+    }
+
+    $placedOrders = Session::get('placed_orders', []);
+    $orderId = 'ORD-' . strtoupper(Str::random(6)) . '-' . time();
+    
+    $newOrder = [
+        'id' => $orderId,
+        'order_id' => $orderId, // Keeping both for backward compatibility
+        'timestamp' => now()->toDateTimeString(),
+        'items' => $processedOrderItems,
+        'total_amount' => $orderTotalAmount,
+        'status' => 'Pending Payment',
+        'customer_name' => auth()->check() ? auth()->user()->name : 'Guest',
+        'customer_email' => auth()->check() ? auth()->user()->email : null,
+        'customer_phone' => auth()->check() ? auth()->user()->phone : null,
+        'created_at' => now()->toDateTimeString(),
+    ];
+
+    array_unshift($placedOrders, $newOrder);
+    Session::put('placed_orders', $placedOrders);
+    Session::put('latest_order', $newOrder); // Store the latest order separately
+    Session::forget('cart');
+
+    return redirect()->route('orders.show', ['orderId' => $orderId])
+        ->with('success', 'Order placed successfully!');
+}
+
+    // public function showOrders(Request $request): View
+    // {
+    //     $placedOrders = Session::get('placed_orders', []);
+
+    //     $validPlacedOrders = array_map(function ($order) {
+    //         $order['order_id'] = $order['order_id'] ?? 'N/A-' . Str::random(4); // Ensure unique fallback
+    //         $order['timestamp'] = $order['timestamp'] ?? now()->toDateTimeString();
+    //         $order['items'] = isset($order['items']) && is_array($order['items']) ? $order['items'] : [];
+    //         // Ensure items within the order also have default values for display
+    //         $order['items'] = array_map(function ($item) {
+    //             return [
+    //                 'name' => $item['name'] ?? 'Unknown Item',
+    //                 'quantity' => $item['quantity'] ?? 0,
+    //                 'price' => $item['price'] ?? 0,
+    //                 'image' => $item['image'] ?? null, // or a default image placeholder
+    //                 'type' => $item['type'] ?? 'standard',
+    //             ];
+    //         }, $order['items']);
+    //         $order['total_amount'] = $order['total_amount'] ?? 0;
+    //         $order['status'] = $order['status'] ?? 'Unknown';
+    //         return $order;
+    //     }, $placedOrders);
+
+    //     return view('order', [ // Assuming your view for showing orders is 'order.blade.php'
+    //         'layoutTitle' => 'Your Orders', // Changed from pageTitle to match confirm view's convention
+    //         'headTitle' => 'Your Orders',
+    //         'placedOrders' => $validPlacedOrders,
+    //     ]);
+    // }
+
+    // public function clearOrderHistory(Request $request): RedirectResponse
+    // {
+    //     Session::forget('placed_orders');
+    //     return redirect()->route('order.index')->with('info', 'Your order history has been cleared.');
+    // }
     public function showOrders(Request $request): View
-    {
-        $placedOrders = Session::get('placed_orders', []);
+{
+    $placedOrders = Session::get('placed_orders', []);
 
-        $validPlacedOrders = array_map(function ($order) {
-            $order['order_id'] = $order['order_id'] ?? 'N/A-' . Str::random(4); // Ensure unique fallback
-            $order['timestamp'] = $order['timestamp'] ?? now()->toDateTimeString();
-            $order['items'] = isset($order['items']) && is_array($order['items']) ? $order['items'] : [];
-            // Ensure items within the order also have default values for display
-            $order['items'] = array_map(function ($item) {
-                return [
-                    'name' => $item['name'] ?? 'Unknown Item',
-                    'quantity' => $item['quantity'] ?? 0,
-                    'price' => $item['price'] ?? 0,
-                    'image' => $item['image'] ?? null, // or a default image placeholder
-                    'type' => $item['type'] ?? 'standard',
-                ];
-            }, $order['items']);
-            $order['total_amount'] = $order['total_amount'] ?? 0;
-            $order['status'] = $order['status'] ?? 'Unknown';
-            return $order;
-        }, $placedOrders);
+    return view('order', [
+        'pageTitle' => 'Your Orders',
+        'placedOrders' => $placedOrders,
+    ]);
+}
 
-        return view('order', [ // Assuming your view for showing orders is 'order.blade.php'
-            'layoutTitle' => 'Your Orders', // Changed from pageTitle to match confirm view's convention
-            'headTitle' => 'Your Orders',
-            'placedOrders' => $validPlacedOrders,
-        ]);
+public function showOrderDetail($orderId): View|RedirectResponse
+{
+    $placedOrders = Session::get('placed_orders', []);
+    $order = collect($placedOrders)->firstWhere('id', $orderId);
+
+    if (!$order) {
+        return redirect()->route('orders.index')->with('error', 'Order not found');
     }
 
-    public function clearOrderHistory(Request $request): RedirectResponse
-    {
-        Session::forget('placed_orders');
-        return redirect()->route('order.index')->with('info', 'Your order history has been cleared.');
-    }
+    return view('orderDetail', [
+        'pageTitle' => 'Order Details - ' . $order['id'],
+        'order' => $order,
+    ]);
+}
+
+public function clearOrderHistory(Request $request): RedirectResponse
+{
+    Session::forget('placed_orders');
+    return redirect()->route('orders.index')->with('info', 'Your order history has been cleared.');
+}
 }

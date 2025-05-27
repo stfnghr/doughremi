@@ -21,8 +21,8 @@
                     MENUS
                 </a>
 
-                <a href="/order"
-                    class="{{ request()->is('order') ? ' font-bold' : '' }} rounded-md px-3 py-2 text-md hover:text-[#F0C672]">
+                <a href="/orders"
+                    class="{{ request()->is('orders') ? ' font-bold' : '' }} rounded-md px-3 py-2 text-md hover:text-[#F0C672]">
                     ORDER
                 </a>
 

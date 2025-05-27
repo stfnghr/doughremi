@@ -1,5 +1,3 @@
-{{-- File: resources/views/confirm.blade.php --}}
-
 <x-layout>
     <x-slot:layoutTitle>{{ $layoutTitle ?? 'Confirm Order' }}</x-slot:layoutTitle>
     <x-slot:headTitle>{{ $headTitle ?? 'Confirm Order' }}</x-slot:headTitle>
@@ -61,7 +59,6 @@
     @endpush
 
     <div class="container mx-auto px-4 py-8 min-h-screen">
-        {{-- Display Flash Messages for cart updates --}}
         @if (session('success_cart_update'))
             <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
                 role="alert">
@@ -151,6 +148,8 @@
                     </div>
                     <form action="{{ route('order.place') }}" method="POST" class="mt-6">
                         @csrf
+                        <input type="hidden" name="cart_items" value="{{ json_encode($cartItems) }}">
+                        <input type="hidden" name="total_amount" value="{{ $totalAmount }}">
                         <button type="submit"
                             class="w-full text-white font-bold py-3 px-4 rounded-lg transition duration-300 hover:shadow-lg"
                             style="background-color: #a07d6a;" onmouseover="this.style.backgroundColor='#8a6c5a'"
