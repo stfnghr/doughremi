@@ -61,7 +61,7 @@
             </div>
         @endif
     
-        <div class="max-w-3xl mx-auto">
+        <div class="max-w-3xl mx-auto text-center">
             <h1 class="text-2xl font-bold mb-6" style="color: #8a6c5a;">Your Orders</h1>
             
             @if (count($placedOrders) > 0)

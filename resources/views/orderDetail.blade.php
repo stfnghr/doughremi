@@ -77,7 +77,14 @@
                     <div class="mb-4">
                         <p><strong>Name:</strong> {{ $order['customer_name'] ?? 'Guest' }}</p>
                         <p><strong>Email:</strong> {{ $order['customer_email'] ?? 'N/A' }}</p>
-                        <p><strong>Phone:</strong> {{ $order['customer_phone'] ?? 'N/A' }}</p>
+                    </div>
+                </div>
+
+                <div class="invoice-column">
+                    <h2 class="section-title">Courier Information</h2>
+                    <div class="mb-4">
+                        <p><strong>Name:</strong> {{ $order['customer_name'] ?? 'Guest' }}</p>
+                        <p><strong>Phone:</strong> {{ $order['customer_email'] ?? 'N/A' }}</p>
                     </div>
                 </div>
 
