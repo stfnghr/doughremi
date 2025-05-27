@@ -6,7 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule; // For unique email rule on update
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
@@ -15,16 +16,17 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::latest()->paginate(10); // Get users, newest first, paginated
+        $users = User::latest()->paginate(10);
+        // This view is not created in this round, but the route can exist
         return view('admin.users.index', compact('users'));
     }
 
     /**
      * Show the form for creating a new user.
-     * (Though not in your example, admins often create users)
      */
     public function create()
     {
+        // This view is not created in this round
         return view('admin.users.create');
     }
 
@@ -34,18 +36,18 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'name' => 'required|string|max:150',
-            'email' => 'required|string|email|max:150|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'is_admin' => 'sometimes|boolean', // 'sometimes' means it's only validated if present
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email',
+            'password' => ['required', 'string', Password::min(8), 'confirmed'],
+            'is_admin' => 'sometimes|boolean',
         ]);
 
         User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
-            'password' => Hash::make($validatedData['password']),
-            'is_admin' => $request->has('is_admin') ? (bool)$request->is_admin : false, // Handle checkbox
-            'email_verified_at' => now(), // Or handle verification flow separately
+            'password' => $validatedData['password'], // Model's 'hashed' cast will handle it
+            'is_admin' => $request->boolean('is_admin'),
+            'email_verified_at' => now(),
         ]);
 
         return redirect()->route('admin.users.index')->with('success', 'User created successfully.');
@@ -53,18 +55,19 @@ class UserController extends Controller
 
     /**
      * Display the specified user.
-     * (Not in your example, but could be useful)
      */
     public function show(User $user)
     {
+        // This view is not created in this round
         return view('admin.users.show', compact('user'));
     }
 
     /**
      * Show the form for editing the specified user.
      */
-    public function edit(User $user) // Route model binding automatically fetches the User
+    public function edit(User $user)
     {
+        // This view is not created in this round
         return view('admin.users.edit', compact('user'));
     }
 
@@ -74,26 +77,26 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $validatedData = $request->validate([
-            'name' => 'required|string|max:150',
+            'name' => 'required|string|max:255',
             'email' => [
                 'required',
                 'string',
                 'email',
-                'max:150',
-                Rule::unique('users')->ignore($user->id), // Ignore this user's current email
+                'max:255',
+                Rule::unique('users')->ignore($user->id),
             ],
-            'password' => 'nullable|string|min:8|confirmed', // Nullable: only update if provided
+            'password' => ['nullable', 'string', Password::min(8), 'confirmed'],
             'is_admin' => 'sometimes|boolean',
         ]);
 
         $userData = [
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
-            'is_admin' => $request->has('is_admin') ? (bool)$request->is_admin : false,
+            'is_admin' => $request->boolean('is_admin'),
         ];
 
         if (!empty($validatedData['password'])) {
-            $userData['password'] = Hash::make($validatedData['password']);
+            $userData['password'] = $validatedData['password'];
         }
 
         $user->update($userData);
@@ -106,9 +109,8 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        // Optional: Prevent admin from deleting themselves
-        if (auth()->id() === $user->id) {
-            return redirect()->route('admin.users.index')->with('error', 'You cannot delete your own account.');
+        if (auth()->id() === $user->id && $user->is_admin) {
+            return redirect()->route('admin.users.index')->with('error', 'You cannot delete your own administrator account.');
         }
 
         $user->delete();
