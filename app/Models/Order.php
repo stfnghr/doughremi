@@ -10,7 +10,8 @@ class Order extends Model
                             'order_date', 
                             'total_price', 
                             'payment_status',
-                            'payment_date'];
+                            'payment_date',
+                            'courier_id'];
 
     public function user()
     {

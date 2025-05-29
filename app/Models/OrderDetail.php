@@ -8,6 +8,7 @@ class OrderDetail extends Model
 {
     protected $fillable = ['order_id',
                             'menu_id',
+                            'courier_id',
                             'amount',
                             'price',
                             'delivery_date',
@@ -23,8 +24,8 @@ class OrderDetail extends Model
         return $this->belongsTo(Menu::class);
     }
 
-    public function couriers()
-    {
-        return $this->belongsTo(Courier::class);
-    }
+    // public function couriers()
+    // {
+    //     return $this->belongsTo(Courier::class);
+    // }
 }

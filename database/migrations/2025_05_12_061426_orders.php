@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->date('order_date');
+            $table->dateTime('order_date')->nullable();
             $table->double('total_price', 8, 2);
             $table->string('payment_status', 50);
-            $table->date('payment_date');
+            $table->timestamp('payment_date')->nullable();
+            $table->foreignId('courier_id')->nullable()->constrained('couriers');
             $table->timestamps();
         });
     }

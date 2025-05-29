@@ -149,8 +149,7 @@
                                         @csrf
                                         <input type="hidden" name="cart_item_id" value="{{ $item['cart_item_id'] }}">
                                         <button type="submit"
-                                            class="text-xs text-red-500 hover:text-red-700 underline"
-                                            onclick="return confirm('Are you sure you want to remove this item?');">
+                                            class="text-xs text-red-500 hover:text-red-700 underline">
                                             Remove
                                         </button>
                                     </form>

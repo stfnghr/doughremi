@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('order_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
-            $table->foreignId('menu_id')->constrained('menus')->onDelete('cascade');
-            $table->foreignId('courier_id')->constrained('couriers')->onDelete('cascade');
+            $table->foreignId('menu_id')->nullable()->constrained('menus');
+            $table->foreignId('courier_id')->nullable()->constrained('couriers')->onDelete('cascade');
             $table->unsignedInteger('amount');
             $table->double('price', 8, 2);
             $table->date('delivery_date');
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('order_items');
+        Schema::dropIfExists('order_details');
     }
 };

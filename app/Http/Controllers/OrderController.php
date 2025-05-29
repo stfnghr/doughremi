@@ -8,6 +8,8 @@ use Illuminate\Support\Str;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use App\Models\Courier; // Assuming you have a Courier model for random courier selection
+use App\Models\Order; // Assuming you have an Order model for order management
+use App\Models\OrderDetail;
 use Illuminate\Support\Facades\Auth; // Make sure this is present
 
 class OrderController extends Controller
@@ -190,81 +192,74 @@ class OrderController extends Controller
     }
 
     public function placeOrder(Request $request): RedirectResponse
-    {
-        $cartItemsFromSession = Session::get('cart', []);
+{
+    $cartItemsFromSession = Session::get('cart', []);
 
-        if (empty($cartItemsFromSession)) {
-            return redirect()->route('order.confirm')->with('error_cart_update', 'Your cart is empty. Cannot place order.');
-        }
-
-        $couriers = Courier::all();
-        if ($couriers->isEmpty()) {
-            // Handle case where no couriers are available
-            return redirect()->route('order.confirm')->with('error_cart_update', 'Sorry, no couriers are available at the moment. Please try again later.');
-        }
-        $randomCourier = $couriers->random();
-
-        $orderTotalAmount = 0;
-        $processedOrderItems = [];
-
-        foreach ($cartItemsFromSession as $cartItem) {
-            $name = $cartItem['name'] ?? 'Unknown Item';
-            $quantity = isset($cartItem['quantity']) && is_numeric($cartItem['quantity']) ? (int)$cartItem['quantity'] : 1;
-            $price = isset($cartItem['price']) && is_numeric($cartItem['price']) ? (float)$cartItem['price'] : 0;
-            $image = $cartItem['image_filename'] ?? null;
-            $type = $cartItem['type'] ?? 'standard';
-
-            $processedOrderItems[] = [
-                'name' => $name,
-                'quantity' => $quantity,
-                'price' => $price,
-                'image' => $image,
-                'type' => $type,
-            ];
-            $orderTotalAmount += $quantity * $price;
-        }
-
-        if (empty($processedOrderItems)) {
-            return redirect()->route('order.confirm')->with('error_cart_update', 'Could not process items in your cart for the order.');
-        }
-
-        $placedOrders = Session::get('placed_orders', []);
-        $orderId = 'ORD-' . strtoupper(Str::random(6)) . '-' . time();
-        
-        $newOrder = [
-            'id' => $orderId,
-            'order_id' => $orderId,
-            'timestamp' => now()->toDateTimeString(),
-            'items' => $processedOrderItems,
-            'total_amount' => $orderTotalAmount,
-            'status' => 'Pending Payment',
-            'customer_name' => Auth::check() ? Auth::user()->name : 'Guest',
-            'customer_email' => Auth::check() ? Auth::user()->email : null,
-            'created_at' => now()->toDateTimeString(),
-            'courier_name' => $randomCourier->name,
-            'courier_phone' => $randomCourier->phone,
-        ];
-
-        array_unshift($placedOrders, $newOrder);
-        Session::put('placed_orders', $placedOrders);
-        Session::forget('cart');
-
-        return redirect()->route('orders.show', ['orderId' => $orderId])
-            ->with('success', 'Order placed successfully!');
+    if (empty($cartItemsFromSession)) {
+        return redirect()->route('order.confirm')->with('error_cart_update', 'Your cart is empty. Cannot place order.');
     }
 
-    public function showOrders(Request $request): View|RedirectResponse
-    {
-        // Auth check you added
-        if (!Auth::check()) {
-            // The message "Please log in to view our Sweet Pick menu!" might be specific.
-            // If this page is strictly for 'Your Orders', a message like:
-            // return redirect()->route('login')->with('info', 'Please log in to view your orders!');
-            // might be more direct. Keeping your original message for now.
-            return redirect()->route('login')->with('info', 'Please log in to view our Sweet Pick menu!');
+    $couriers = Courier::all();
+    if ($couriers->isEmpty()) {
+        return redirect()->route('order.confirm')->with('error_cart_update', 'Sorry, no couriers are available at the moment. Please try again later.');
+    }
+    $randomCourier = $couriers->random();
+
+    $orderTotalAmount = 0;
+    foreach ($cartItemsFromSession as $cartItem) {
+        $quantity = $cartItem['quantity'] ?? 1;
+        $price = $cartItem['price'] ?? 0;
+        $orderTotalAmount += $quantity * $price;
+    }
+
+    $order = new Order;
+    $order->user_id = Auth::id();
+    $order->order_date = now();
+    $order->total_price = $orderTotalAmount;
+    $order->payment_status = 'Pending Payment';
+    $order->payment_date = null;
+    $order->courier_id = $randomCourier->id;
+    $order->save();
+
+    // Create order details
+    foreach ($cartItemsFromSession as $cartItem) {
+        $orderDetailData = [
+            'order_id' => $order->id,
+            'amount' => $cartItem['quantity'] ?? 1,
+            'price' => $cartItem['price'] ?? 0,
+            'delivery_date' => now()->addDays(3)->toDateString(),
+            'delivery_status' => 'Pending',
+        ];
+
+        // Only add menu_id for non-custom items
+        if ($cartItem['type'] !== 'custom') {
+            $orderDetailData['menu_id'] = $cartItem['id'];
         }
 
-        $placedOrders = Session::get('placed_orders', []);
+        try {
+            OrderDetail::create($orderDetailData);
+        } catch (\Exception $e) {
+            \Log::error('Error creating order detail: '.$e->getMessage());
+            continue;
+        }
+    }
+
+    Session::forget('cart');
+
+    return redirect()->route('orders.show', ['orderId' => $order->id])
+        ->with('success', 'Order placed successfully!');
+}
+
+public function showOrders(Request $request): View|RedirectResponse
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('info', 'Please log in to view your orders!');
+        }
+
+        $placedOrders = Order::with(['orderDetail.menu', 'courier'])
+                            ->where('user_id', Auth::id())
+                            ->orderBy('created_at', 'desc')
+                            ->get();
 
         return view('order', [
             'pageTitle' => 'Your Orders',
@@ -274,20 +269,19 @@ class OrderController extends Controller
     }
 
     public function showOrderDetail($orderId): View|RedirectResponse
-    {
-        $placedOrders = Session::get('placed_orders', []);
-        $order = collect($placedOrders)->firstWhere('id', $orderId);
+{
+    $order = Order::with(['orderDetail', 'orderDetail.menus', 'courier'])->find($orderId);
 
-        if (!$order) {
-            return redirect()->route('orders.index')->with('error', 'Order not found');
-        }
-
-        return view('orderDetail', [
-            'pageTitle' => 'Order Details - ' . $order['id'],
-            'headTitle' => 'Order Details - ' . $order['id'],
-            'order' => $order,
-        ]);
+    if (!$order || $order->user_id !== Auth::id()) {
+        return redirect()->route('orders.index')->with('error', 'Order not found');
     }
+
+    return view('orderDetail', [
+        'pageTitle' => 'Order Details - ' . $order->id,
+        'headTitle' => 'Order Details - ' . $order->id,
+        'order' => $order,
+    ]);
+}
 
     public function clearOrderHistory(Request $request): RedirectResponse
     {

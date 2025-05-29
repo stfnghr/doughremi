@@ -11,9 +11,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\MenuController;
 
 Route::get('/', function () {
-    return view('home', [
-        "pageTitle" => "Home"
-    ]);
+    return view('home', ["pageTitle" => "Home"]);
 })->name('home'); // Added name for home route
 
 // // Login Route (assuming UserController has showLoginForm method for GET)
@@ -67,12 +65,3 @@ Route::get('/orders/{orderId}', [OrderController::class, 'showOrderDetail'])->na
 // Cart Item Management (other than quantity update which is now in order.confirm)
 Route::post('/cart/add', [OrderController::class, 'addItemToCart'])->name('cart.add'); // Should ideally be POST
 Route::post('/cart/remove', [OrderController::class, 'removeItem'])->name('cart.remove');
-
-// The route for updateQuantity is now effectively superseded by the POST logic in order.confirm for the cart UI.
-// You can comment out or remove this if it's not used elsewhere.
-// Route::post('/cart/update-quantity', [OrderController::class, 'updateQuantity'])->name('cart.updateQuantity');
-
-// This route pointing to updateCart might also be superseded for the cart UI.
-// Route::post('/order/update', [OrderController::class, 'updateCart'])->name('order.update');
-
-// Ensure any faulty/test login routes are removed.
