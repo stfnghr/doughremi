@@ -41,7 +41,12 @@ class UserController extends Controller
 
     if (Auth::attempt($credentials)) {
         $request->session()->regenerate(); // Important for session fixation protection
-        return redirect()->intended('/profile'); // Redirect to profile after login
+        $user = Auth::user();
+            if ($user->is_admin) {
+                return redirect()->route('admin.home')->with('success', 'Welcome back, Admin!');
+            } else {
+                return redirect()->intended('/profile')->with('success', 'Logged in successfully!');
+            }
     }
 
     return back()->withErrors([
