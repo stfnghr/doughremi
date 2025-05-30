@@ -96,7 +96,7 @@
              </div>
         @endif
 
-        <a href="{{ route('order.index') }}" class="orders-link-btn">View My Orders</a>
+        <a href="{{ route('orders.index') }}" class="orders-link-btn">View My Orders</a>
 
         {{-- Correct the route name in the form action --}}
         <form action="{{ route('logout') }}" method="POST" style="display: inline;">

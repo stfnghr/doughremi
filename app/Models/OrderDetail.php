@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class OrderItem extends Model
+class OrderDetail extends Model
 {
     protected $fillable = ['order_id',
                             'menu_id',
+                            'courier_id',
                             'amount',
                             'price',
                             'delivery_date',
@@ -23,8 +24,8 @@ class OrderItem extends Model
         return $this->belongsTo(Menu::class);
     }
 
-    public function couriers()
-    {
-        return $this->belongsTo(Courier::class);
-    }
+    // public function couriers()
+    // {
+    //     return $this->belongsTo(Courier::class);
+    // }
 }

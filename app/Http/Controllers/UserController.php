@@ -4,40 +4,32 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\Rules\Password;
+// use Illuminate\Support\Facades\Hash; // Not strictly needed here if model handles hashing
+// use Illuminate\Validation\Rules\Password; // Optional: For more complex password rules
 
 class UserController extends Controller
 {
     public function signup(Request $request): RedirectResponse
     {
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email',
-            'password' => ['required', 'string', Password::defaults()], // Use Password::defaults() for Laravel's recommended rules
-            // If you want password confirmation:
-            // 'password' => ['required', 'string', Password::defaults(), 'confirmed'],
-            'is_admin' => 'sometimes|boolean', // 'sometimes' ensures it's only validated if present
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8',
+            'is_admin' => 'boolean',
         ]);
 
-        // The 'hashed' cast in the User model will handle password hashing.
+    
         $user = User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
-            'password' => $validatedData['password'], // Pass the PLAIN password
-            'is_admin' => $request->boolean('is_admin'), // Use $request->boolean() for cleaner boolean input handling
-            // 'email_verified_at' => now(), // Uncomment if you want to auto-verify on signup
+            'password' => Hash::make($validatedData['password']),
+            'is_admin' => $validatedData['is_admin'] ?? false,
         ]);
-
-        // Optional: Log the user in immediately after signup
-        // Auth::login($user);
-        // if ($user->isAdmin()) {
-        //     return redirect()->route('admin.dashboard')->with('success', 'Registration successful and logged in!');
-        // }
-        // return redirect()->intended('/profile')->with('success', 'Registration successful and logged in!');
-
-        return redirect('/login')->with('success', 'Registration successful! Please log in.');
+        return redirect('/');
     }
 
     public function login(Request $request): RedirectResponse
@@ -47,20 +39,15 @@ class UserController extends Controller
             'password' => 'required|string'
         ]);
 
-        if (Auth::attempt($credentials, $request->filled('remember'))) {
-            $request->session()->regenerate();
-            $user = Auth::user();
-            if ($user->is_admin) {
-                return redirect()->route('admin.home')->with('success', 'Welcome back, Admin!');
-            } else {
-                return redirect()->intended('/profile')->with('success', 'Logged in successfully!');
-            }
-        }
-
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ])->onlyInput('email');
+    if (Auth::attempt($credentials)) {
+        $request->session()->regenerate(); // Important for session fixation protection
+        return redirect()->intended('/profile'); // Redirect to profile after login
     }
+
+    return back()->withErrors([
+        'email' => 'Invalid credentials',
+    ])->onlyInput('email');
+}
 
     public function logout(Request $request): RedirectResponse
     {

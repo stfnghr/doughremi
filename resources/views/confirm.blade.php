@@ -1,8 +1,13 @@
 {{-- File: resources/views/confirm.blade.php --}}
 
 <x-layout>
-    <x-slot:layoutTitle>{{ $layoutTitle ?? 'Confirm Order' }}</x-slot:layoutTitle>
-    <x-slot:headTitle>{{ $headTitle ?? 'Confirm Order' }}</x-slot:headTitle>
+    <x-slot name="layoutTitle">
+        {{ $layoutTitle ?? 'Confirm Order' }}
+    </x-slot>
+
+    <x-slot name="headTitle">
+        {{ $headTitle ?? 'Confirm Order' }}
+    </x-slot>
 
     @push('styles')
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,49 +18,46 @@
             body {
                 font-family: 'Quicksand', sans-serif;
             }
-
             .font-coiny {
                 font-family: 'Coiny', cursive;
             }
-
             .empty-cart-card {
                 background-color: #FBF5EF;
                 padding: 2rem;
                 border-radius: 1rem;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.08);
                 text-align: center;
                 border: 1px solid #e5dcd4;
             }
-
             .empty-cart-card h2 {
-                font-size: 1.5rem;
-                /* 24px */
+                font-size: 1.5rem; /* 24px */
                 color: #8a6c5a;
                 margin-bottom: 1rem;
             }
-
             .empty-cart-card p {
                 color: #6b4f4f;
                 margin-bottom: 1.5rem;
             }
-
             .empty-cart-card .action-button {
                 display: inline-block;
-                text-white: ;
-                /* Tailwind class equivalent */
                 color: white;
                 font-weight: bold;
-                padding: 0.75rem 1.5rem;
-                /* py-3 px-6 */
-                border-radius: 0.5rem;
-                /* rounded-lg */
+                padding: 0.75rem 1.5rem; /* py-3 px-6 */
+                border-radius: 0.5rem; /* rounded-lg */
                 transition: background-color 0.3s ease;
                 background-color: #a07d6a;
                 text-decoration: none;
             }
-
             .empty-cart-card .action-button:hover {
                 background-color: #8a6c5a;
+            }
+            input[type=number]::-webkit-inner-spin-button,
+            input[type=number]::-webkit-outer-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+            input[type=number] {
+                -moz-appearance: textfield; /* Firefox */
             }
         </style>
     @endpush
@@ -63,8 +65,7 @@
     <div class="container mx-auto px-4 py-8 min-h-screen">
         {{-- Display Flash Messages for cart updates --}}
         @if (session('success_cart_update'))
-            <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
-                role="alert">
+            <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
                 <strong class="font-bold">Success!</strong>
                 <span class="block sm:inline">{{ session('success_cart_update') }}</span>
             </div>
@@ -76,9 +77,7 @@
             </div>
         @endif
         @if (session('info'))
-            {{-- General info message, like cart is now empty --}}
-            <div class="mb-6 bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative"
-                role="alert">
+            <div class="mb-6 bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative" role="alert">
                 <strong class="font-bold">Info:</strong>
                 <span class="block sm:inline">{{ session('info') }}</span>
             </div>
@@ -93,43 +92,64 @@
                     <h2 class="text-xl font-semibold mb-4 border-b pb-2" style="color: #8a6c5a;">Your Current Order</h2>
                     <ul class="space-y-4">
                         @foreach ($cartItems as $item)
-                            <li
-                                class="flex justify-between items-start border-b border-gray-300/50 pb-3 last:border-b-0">
+                            @php
+                                $itemQuantity = $item['quantity'] ?? 1;
+                                $itemPrice = $item['price'] ?? 0;
+                            @endphp
+                            <li class="flex justify-between items-start border-b border-gray-300/50 pb-3 last:border-b-0">
                                 <div class="flex-grow flex items-center">
-                                    @if (isset($item['image_filename']))
-                                        <img src="{{ asset('images/' . $item['image_filename']) }}"
-                                            alt="{{ $item['name'] ?? 'Item' }}"
-                                            class="w-16 h-16 object-contain mr-4 rounded">
+                                    {{-- IMAGE DISPLAY - CORRECTED PATH --}}
+                                    @if (isset($item['image_filename']) && !empty($item['image_filename']))
+                                        {{-- All images are directly in public/images/ --}}
+                                        <img src="{{ asset('images/' . $item['image_filename']) }}" alt="{{ $item['name'] ?? 'Item' }}" class="w-16 h-16 object-contain mr-4 rounded">
+                                    @else
+                                        <div class="w-16 h-16 bg-gray-200 mr-4 rounded flex items-center justify-center text-xs text-gray-500">No Img</div>
                                     @endif
-                                    <div class="flex">
-                                        <div>
-                                            <span class="font-medium block"
-                                                style="color: #6b4f4f;">{{ $item['name'] ?? 'Unknown Item' }}</span>
-                                            <span class="text-sm text-gray-600 block">Quantity:
-                                                {{ $item['quantity'] ?? 1 }}</span>
+                                    {{-- END OF IMAGE DISPLAY CORRECTION --}}
+                                    <div>
+                                        <span class="font-medium block" style="color: #6b4f4f;">{{ $item['name'] ?? 'Unknown Item' }}</span>
+                                        
+                                        <div class="flex items-center space-x-1 mt-1">
+                                            <span class="text-xs text-gray-500 mr-1">Qty:</span>
+                                            <div class="inline-flex items-center">
+                                                <form action="{{ route('order.confirm') }}" method="POST" class="contents">
+                                                    @csrf
+                                                    <input type="hidden" name="intent" value="update_quantity">
+                                                    <input type="hidden" name="cart_item_id" value="{{ $item['cart_item_id'] }}">
+                                                    <input type="hidden" name="change" value="-1">
+                                                    <button type="submit" 
+                                                            class="px-1.5 py-0.5 text-xs font-semibold border rounded-l bg-slate-200 hover:bg-slate-300 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                                            {{ $itemQuantity <= 1 ? 'disabled' : '' }}>-</button>
+                                                </form>
+                                                
+                                                <span class="w-8 text-center border-t border-b text-xs p-0.5 bg-white">
+                                                    {{ $itemQuantity }}
+                                                </span>
+                                                
+                                                <form action="{{ route('order.confirm') }}" method="POST" class="contents">
+                                                    @csrf
+                                                    <input type="hidden" name="intent" value="update_quantity">
+                                                    <input type="hidden" name="cart_item_id" value="{{ $item['cart_item_id'] }}">
+                                                    <input type="hidden" name="change" value="1">
+                                                    <button type="submit" 
+                                                            class="px-1.5 py-0.5 text-xs font-semibold border rounded-r bg-slate-200 hover:bg-slate-300 focus:outline-none">+</button>
+                                                </form>
+                                            </div>
                                         </div>
-
-                                        {{-- add quantity button here --}}
                                     </div>
-
                                 </div>
                                 <div class="text-right ml-4">
                                     <span class="font-semibold text-lg block" style="color: #6b4f4f;">
                                         @php
-                                            $subtotal =
-                                                isset($item['price'], $item['quantity']) &&
-                                                is_numeric($item['price']) &&
-                                                is_numeric($item['quantity'])
-                                                    ? $item['price'] * $item['quantity']
-                                                    : 0;
+                                            $subtotal = $itemPrice * $itemQuantity;
                                         @endphp
                                         IDR {{ number_format($subtotal, 0, ',', '.') }}
                                     </span>
                                     <form action="{{ route('cart.remove') }}" method="POST" class="mt-1">
                                         @csrf
                                         <input type="hidden" name="cart_item_id" value="{{ $item['cart_item_id'] }}">
-                                        <button type="submit" class="text-xs text-red-500 hover:text-red-700 underline"
-                                            onclick="return confirm('Are you sure you want to remove this item?');">
+                                        <button type="submit"
+                                            class="text-xs text-red-500 hover:text-red-700 underline">
                                             Remove
                                         </button>
                                     </form>
@@ -139,9 +159,7 @@
                     </ul>
                 </div>
 
-                {{-- Right Column: Total Payment Summary --}}
-                <div
-                    class="md:w-1/3 bg-[#FBF5EF] p-6 rounded-2xl shadow-md border border-gray-200 h-fit md:sticky md:top-8">
+                <div class="md:w-1/3 bg-[#FBF5EF] p-6 rounded-2xl shadow-md border border-gray-200 h-fit md:sticky md:top-8">
                     <h2 class="text-xl font-semibold mb-4 border-b pb-2" style="color: #8a6c5a;">Payment Summary</h2>
                     <div class="border-t border-gray-300/50 pt-4 mt-4">
                         <div class="flex justify-between items-center text-xl font-bold" style="color: #6b4f4f;">
@@ -166,8 +184,9 @@
                             ← Back to Customization
                         </a>
                     </div>
-                    <div class="text-center mt-2"> {{-- Added another link to browse menus --}}
-                        <a href="/menu1" class="text-sm" style="color: #a07d6a; text-decoration: underline;"
+                     <div class="text-center mt-2">
+                        <a href="{{ route('menu.sweetpick') }}" class="text-sm"
+                            style="color: #a07d6a; text-decoration: underline;"
                             onmouseover="this.style.textDecoration='none'"
                             onmouseout="this.style.textDecoration='underline'">
                             Browse Menus
@@ -181,11 +200,14 @@
                 <div class="empty-cart-card">
                     <h2>Your Cart is Empty!</h2>
                     <p>Looks like you haven't added any delicious cookies to your cart yet.</p>
-                    <a href="/menu1" class="action-button">Browse Our Menus</a>
-                    <p class="mt-4 text-sm">Or <a href="{{ route('custom.index') }}"
-                            class="text-[#a07d6a] underline hover:text-[#8a6c5a]">create a custom cookie!</a></p>
+                    <a href="{{ route('menu.sweetpick') }}" class="action-button">Browse Our Menus</a>
+                    <p class="mt-4 text-sm">Or <a href="{{ route('custom.index') }}" class="text-[#a07d6a] underline hover:text-[#8a6c5a]">create a custom cookie!</a></p>
                 </div>
             </div>
         @endif
     </div>
+
+    @push('scripts')
+    {{-- No specific JavaScript needed for this quantity update approach --}}
+    @endpush
 </x-layout>
