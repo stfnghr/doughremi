@@ -256,7 +256,7 @@ public function showOrders(Request $request): View|RedirectResponse
             return redirect()->route('login')->with('info', 'Please log in to view your orders!');
         }
 
-        $placedOrders = Order::with(['orderDetail.menu', 'courier'])
+        $placedOrders = Order::with(['orderDetail.menus', 'courier'])
                             ->where('user_id', Auth::id())
                             ->orderBy('created_at', 'desc')
                             ->get();
