@@ -70,20 +70,21 @@
         @endif
 
         <div class="max-w-3xl mx-auto text-center">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold" style="color: #783F12;">Your Orders</h1>
+            <div class="relative flex justify-center items-center mb-6">
+                <h1 class="text-2xl font-bold text-center" style="color: #783F12;">Your Orders</h1>
 
                 @if (count($placedOrders) > 0)
                     <a href="{{ route('orders.clearHistory') }}"
                         onclick="return confirm('Are you sure you want to clear your entire order history? This cannot be undone.')"
-                        class="flex items-center gap-1 p-2 rounded-full hover:bg-[#e8d9c5] transition group"
+                        class="absolute right-0 top-1/2 transform -translate-y-1/2 flex items-center gap-1 p-2 rounded-full hover:bg-[#e8d9c5] transition group"
                         title="Clear Order History">
-                        <svg width="20" height="20" viewBox="0 0 30 30" fill="none"
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <path
-                                d="M22.5 11.25L21.45 21.7475C21.2912 23.3388 21.2125 24.1338 20.85 24.735C20.5321 25.2643 20.0645 25.6875 19.5062 25.9512C18.8725 26.25 18.075 26.25 16.475 26.25H13.525C11.9262 26.25 11.1275 26.25 10.4938 25.95C9.93506 25.6864 9.46702 25.2632 9.14875 24.7338C8.78875 24.1338 8.70875 23.3388 8.54875 21.7475L7.5 11.25M16.875 19.375V13.125M13.125 19.375V13.125M5.625 8.125H11.3937M11.3937 8.125L11.8763 4.785C12.0163 4.1775 12.5212 3.75 13.1012 3.75H16.8988C17.4788 3.75 17.9825 4.1775 18.1237 4.785L18.6063 8.125M11.3937 8.125H18.6063M18.6063 8.125H24.375"
-                                stroke="#783F12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                d="M4 7H20M10 11V17M14 11V17M5 7L6 19C6 19.5304 6.21071 20.0391 6.58579 20.4142C6.96086 20.7893 7.46957 21 8 21H16C16.5304 21 17.0391 20.7893 17.4142 20.4142C17.7893 20.0391 18 19.5304 18 19L19 7M9 7V4C9 3.73478 9.10536 3.48043 9.29289 3.29289C9.48043 3.10536 9.73478 3 10 3H14C14.2652 3 14.5196 3.10536 14.7071 3.29289C14.8946 3.48043 15 3.73478 15 4V7"
+                                stroke="#FF0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
+
                     </a>
                 @endif
             </div>
@@ -105,7 +106,7 @@
                                     <span class="text-gray-700">Total: <span class="font-bold">IDR
                                             {{ number_format($order->total_price ?? 0, 0, ',', '.') }}</span></span>
                                     <span
-                                        class="text-xs font-medium px-2 py-0.5 rounded {{ $order->payment_status === 'Pending Payment' ? 'bg-yellow-200 text-yellow-800' : ($order->payment_status === 'Completed' ? 'bg-green-200 text-green-800' : 'bg-gray-200 text-gray-800') }}">
+                                        class="text-xs font-medium px-2 py-0.5 rounded {{ $order->payment_status === 'Pending Payment' ? 'bg-yellow-200 text-yellow-800' : ($order->payment_status === 'Paid' ? 'bg-green-200 text-green-800' : 'bg-gray-200 text-gray-800') }}">
                                         {{ $order->payment_status ?? 'Unknown' }}
                                     </span>
                                 </div>

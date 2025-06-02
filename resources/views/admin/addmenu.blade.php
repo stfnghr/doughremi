@@ -9,51 +9,125 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Coiny&family=Quicksand:wght@400;500;700&display=swap"
         rel="stylesheet">
-    <title>Admin - Add Menu</title>
+    {{-- Use the $pageTitle variable passed from the controller --}}
+    <title>{{ $pageTitle ?? 'Admin - Add Menu' }}</title>
     <style>
         body {
             font-family: 'Quicksand', sans-serif;
             background-color: #FAF5F2;
-            /* Default background */
             color: #783F12;
-            /* Default text color */
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
             min-height: 100vh;
         }
+        .font-coiny { font-family: 'Coiny', cursive; }
 
-        .font-coiny {
-            font-family: 'Coiny', cursive;
+        /* Basic form styling to match your theme */
+        .form-container {
+            background-color: #FBF5EF; /* Card background from your theme */
+            padding: 2rem;
+            border-radius: 1rem; /* 16px */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5dcd4;
+            width: 100%;
+            max-width: 500px; /* Adjust as needed */
         }
-
-        .content-wrapper {
-            flex-grow: 1;
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem; /* 8px */
+            color: #8a6c5a; /* Lighter brown for labels */
+            font-weight: 500;
+            font-size: 0.875rem; /* 14px */
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem; /* 12px 16px */
+            border: 1px solid #d1c5ba;
+            border-radius: 0.5rem; /* 8px */
+            box-sizing: border-box;
+            margin-bottom: 1rem; /* 16px */
+            font-size: 1rem;
+            color: #783F12;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #a07d6a;
+            box-shadow: 0 0 0 2px rgba(160, 125, 106, 0.2);
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 0.875rem; /* 14px */
+            background-color: #a07d6a; /* Theme color */
+            color: white;
+            border: none;
+            border-radius: 0.5rem; /* 8px */
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .submit-btn:hover {
+            background-color: #8a6c5a; /* Darker theme color */
+        }
+        .cancel-link {
+            display: block;
+            text-align: center;
+            margin-top: 1rem;
+            color: #a07d6a;
+            text-decoration: underline;
+            font-size: 0.875rem;
+        }
+        .cancel-link:hover{
+            color: #783F12;
         }
     </style>
 </head>
 
 <body>
-    <div class="min-h-screen flex flex-col items-center justify-center p-10 w-full overflow-hidden">
-        <h1 class="font-bold text-6xl mb-8 text-center">Add Menu Item</h1>
-        <form action="/admin/addmenu" method="POST" class="w-full max-w-md">
-            @csrf
-            <div class="mb-4">
-                <label for="name" class="block text-sm font-medium mb-2">Menu Item Name</label>
-                <input type="text" id="name" name="name" required
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+    <div class="min-h-screen flex flex-col items-center justify-center p-6 sm:p-10 w-full">
+        <h1 class="font-coiny font-bold text-4xl sm:text-5xl mb-8 text-center">{{ $pageTitle ?? 'Add Menu Item' }}</h1>
+
+        {{-- Display Validation Errors --}}
+        @if ($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 w-full max-w-md" role="alert">
+                <strong class="font-bold">Oops! Something went wrong.</strong>
+                <ul class="mt-2 list-disc list-inside text-sm">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
-            <div class="mb-4">
-                <label for="price" class="block text-sm font-medium mb-2">Price</label>
-                <input type="number" id="price" name="price" required step="0.01"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-            <button type="submit"
-                class="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300">Add
-                Menu Item</button>
-        </form>
+        @endif
+
+        <div class="form-container">
+            {{-- The form now submits to a named route 'admin.menu.store' --}}
+            <form action="{{ route('admin.menu.store') }}" method="POST">
+                @csrf
+                <div class="mb-4">
+                    <label for="name" class="form-label">Menu Item Name</label>
+                    <input type="text" id="name" name="name" value="{{ old('name') }}" required
+                        class="form-input">
+                </div>
+
+                <div class="mb-4">
+                    <label for="description" class="form-label">Description (Optional)</label>
+                    <textarea id="description" name="description" rows="3"
+                        class="form-input">{{ old('description') }}</textarea>
+                </div>
+
+                <div class="mb-6">
+                    <label for="price" class="form-label">Price</label>
+                    <input type="number" id="price" name="price" value="{{ old('price') }}" required step="0.01" min="0"
+                        class="form-input">
+                </div>
+                {{-- You can add more fields here, like category, image upload, etc. --}}
+
+                <button type="submit" class="submit-btn">
+                    Add Menu Item
+                </button>
+            </form>
+            <a href="{{ route('admin.home') }}" class="cancel-link">Cancel</a>
+        </div>
     </div>
 </body>
-
 </html>

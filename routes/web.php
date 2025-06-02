@@ -65,49 +65,21 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Admin Dashboard
     Route::get('/home', [AdminDashboardController::class, 'index'])->name('home');
 
-    // --- USER MANAGEMENT (Using Admin/UserController) ---
-    // Listing users
-    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+    // --- USER MANAGEMENT (Example) ---
+    // Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+    // ... other user management routes
 
-    // Show form to create a new user
-    Route::get('/users/create', [AdminUserController::class, 'create'])->name('users.create');
-
-    // Store the new user
-    Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
-
-    // Show a specific user (optional, but good for detail views)
-    Route::get('/users/{user}', [AdminUserController::class, 'show'])->name('users.show');
-
-    // Show form to edit a user
-    Route::get('/users/{user}/edit', [AdminUserController::class, 'edit'])->name('users.edit');
-
-    // Update the user
-    Route::put('/users/{user}', [AdminUserController::class, 'update'])->name('users.update');
-    // You might also use PATCH: Route::patch('/users/{user}', [AdminUserController::class, 'update']);
-
-    // Delete a user
-    Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
-
-    // Menu Management Index
+    // --- MENU MANAGEMENT ---
+    Route::get('/menu/add', [AdminMenuController::class, 'create'])->name('menu.add');
+    Route::post('/menu/store', [AdminMenuController::class, 'store'])->name('menu.store');
     Route::get('/menu', [AdminMenuController::class, 'index'])->name('menu.index');
-    
-    // Create Menu Item
-    Route::get('/menu/create', [AdminMenuController::class, 'create'])->name('menu.create');
-    Route::post('/menu', [AdminMenuController::class, 'store'])->name('menu.store');
-    
-    // Edit Menu Item
-    Route::get('/menu/{menu}/edit', [AdminMenuController::class, 'edit'])->name('menu.edit');
-    Route::put('/menu/{menu}', [AdminMenuController::class, 'update'])->name('menu.update');
-    
-    // Delete Menu Item
-    Route::delete('/menu/{menu}', [AdminMenuController::class, 'destroy'])->name('menu.destroy');
-    
-    // Order Management
+    Route::get('/menu/{id}/edit', [AdminMenuController::class, 'edit'])->name('menu.edit');
+    Route::put('/menu/{id}', [AdminMenuController::class, 'update'])->name('menu.update');
+    Route::delete('/menu/{id}', [AdminMenuController::class, 'destroy'])->name('menu.destroy');
+
+    // --- ORDER MANAGEMENT ---
     Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
-
-    // Show a specific order
-    Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
-
-    // Confirm Order Status
+    Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show'); // This defines admin.orders.show
     Route::put('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.updateStatus');
+
 });
