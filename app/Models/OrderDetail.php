@@ -27,7 +27,7 @@ class OrderDetail extends Model
 
     public function menus()
     {
-        return $this->belongsTo(Menu::class);
+        return $this->belongsTo(Menu::class, 'menu_id');
     }
 
     public function courier()

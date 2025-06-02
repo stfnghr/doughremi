@@ -1,8 +1,5 @@
 <?php
 
-use App\Models\User; // Keep if used for type hinting or direct model interaction in routes
-use App\Models\Order; // Keep if used
-use App\Models\OrderItem; // Keep if used
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomOrderController;
 use App\Http\Controllers\OrderController;
