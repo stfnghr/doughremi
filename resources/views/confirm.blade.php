@@ -201,7 +201,7 @@
                     <h2>Your Cart is Empty!</h2>
                     <p>Looks like you haven't added any delicious cookies to your cart yet.</p>
                     <a href="{{ route('menu.sweetpick') }}" class="action-button">Browse Our Menus</a>
-                    <p class="mt-4 text-sm">Or <a href="{{ route('custom.index') }}" class="text-[#a07d6a] underline hover:text-[#8a6c5a]">create a custom cookie!</a></p>
+                    <p class="mt-4 text-sm">Or <a href="{{ route('start.customization') }}" class="text-[#a07d6a] underline hover:text-[#8a6c5a]">create a custom cookie!</a></p>
                 </div>
             </div>
         @endif
