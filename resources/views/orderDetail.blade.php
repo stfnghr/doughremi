@@ -35,7 +35,7 @@
 
             .section-title {
                 font-weight: 600;
-                color: #8a6c5a;
+                color: #783F12;
                 margin-bottom: 1rem;
                 font-size: 1.1rem;
             }
@@ -55,7 +55,7 @@
             .back-link {
                 display: inline-block;
                 margin-top: 1rem;
-                color: #a07d6a;
+                color: #783F12;
                 text-decoration: underline;
             }
 
@@ -72,8 +72,8 @@
     <div class="container mx-auto px-4 py-8">
         <div class="invoice-container">
             <div class="invoice-header">
-                <h1 class="text-2xl font-bold" style="color: #6b4f4f;">ORDER INVOICE</h1>
-                <p class="text-gray-600 mt-2">Order #{{ $order->id }}</p>
+                <h1 class="text-2xl font-bold" style="color: #783F12;">ORDER INVOICE</h1>
+                <p class="text-gray-600 mt-2">Order #{{ $order->user_sequence }}</p>
                 <p class="text-sm text-gray-500">
                     {{ \Carbon\Carbon::parse($order->order_date)->format('M d, Y H:i') }}
                 </p>
@@ -103,15 +103,14 @@
                 <div class="invoice-column">
                     <h2 class="section-title">Order Items</h2>
                     <div class="mb-4">
-                        @foreach ($order->orderDetail as $detail)
+                        @foreach ($order->orderDetails as $detail)
                             <div class="item-row">
                                 <span class="item-name">
-                                    @if ($detail->menus)
-                                        {{ $detail->menus->name }}
+                                    @if ($detail->menu_id)
+                                        {{ $detail->menus->name }} × {{ $detail->amount }}
                                     @else
-                                        Cookie
+                                        {{ $detail->custom_name }} × {{ $detail->amount }}
                                     @endif
-                                    × {{ $detail->amount }}
                                 </span>
                                 <span>IDR {{ number_format($detail->price * $detail->amount, 0, ',', '.') }}</span>
                             </div>

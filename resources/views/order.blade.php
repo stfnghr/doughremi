@@ -70,7 +70,24 @@
         @endif
 
         <div class="max-w-3xl mx-auto text-center">
-            <h1 class="text-2xl font-bold mb-6" style="color: #8a6c5a;">Your Orders</h1>
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold" style="color: #783F12;">Your Orders</h1>
+
+                @if (count($placedOrders) > 0)
+                    <a href="{{ route('orders.clearHistory') }}"
+                        onclick="return confirm('Are you sure you want to clear your entire order history? This cannot be undone.')"
+                        class="flex items-center gap-1 p-2 rounded-full hover:bg-[#e8d9c5] transition group"
+                        title="Clear Order History">
+                        <svg width="20" height="20" viewBox="0 0 30 30" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M22.5 11.25L21.45 21.7475C21.2912 23.3388 21.2125 24.1338 20.85 24.735C20.5321 25.2643 20.0645 25.6875 19.5062 25.9512C18.8725 26.25 18.075 26.25 16.475 26.25H13.525C11.9262 26.25 11.1275 26.25 10.4938 25.95C9.93506 25.6864 9.46702 25.2632 9.14875 24.7338C8.78875 24.1338 8.70875 23.3388 8.54875 21.7475L7.5 11.25M16.875 19.375V13.125M13.125 19.375V13.125M5.625 8.125H11.3937M11.3937 8.125L11.8763 4.785C12.0163 4.1775 12.5212 3.75 13.1012 3.75H16.8988C17.4788 3.75 17.9825 4.1775 18.1237 4.785L18.6063 8.125M11.3937 8.125H18.6063M18.6063 8.125H24.375"
+                                stroke="#783F12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </a>
+                @endif
+            </div>
+
 
             @if (count($placedOrders) > 0)
                 <div id="order-list">
@@ -78,8 +95,8 @@
                         <a href="{{ route('orders.show', ['orderId' => $order->id]) }}" class="block">
                             <div class="order-card">
                                 <div class="flex justify-between items-center">
-                                    <span class="font-semibold text-lg" style="color: #6b4f4f;">Order
-                                        #{{ $order->id ?? 'Unknown' }}</span>
+                                    <span class="font-semibold text-lg" style="color: #783F12;">Order
+                                        #{{ $order->user_sequence }}</span>
                                     <span class="text-sm text-gray-500">
                                         {{ \Carbon\Carbon::parse($order->created_at)->format('M d, Y H:i') }}
                                     </span>
@@ -102,8 +119,8 @@
                     <p class="text-gray-600 text-lg mb-4">You haven't placed any orders yet.</p>
                     <a href="{{ route('menu.sweetpick') }}"
                         class="inline-block text-white font-bold py-2 px-4 rounded-lg transition duration-300"
-                        style="background-color: #a07d6a;" onmouseover="this.style.backgroundColor='#8a6c5a'"
-                        onmouseout="this.style.backgroundColor='#a07d6a'">
+                        style="background-color: #783F12;" onmouseover="this.style.backgroundColor='#8A6C5A'"
+                        onmouseout="this.style.backgroundColor='#783F12'">
                         Browse Our Cookies
                     </a>
                 </div>

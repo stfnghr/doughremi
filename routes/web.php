@@ -54,7 +54,7 @@ Route::post('/order/place', [OrderController::class, 'placeOrder'])->name('order
 // Order History and Details
 // In routes/web.php
 Route::get('/orders', [OrderController::class, 'showOrders'])->name('orders.index'); // Changed to plural // Changed from /order to /orders for clarity
-Route::get('/orders/clear', [OrderController::class, 'clearOrderHistory'])->name('order.clearHistory');
+Route::get('/orders/clear', [OrderController::class, 'clearOrderHistory'])->name('orders.clearHistory');
 Route::get('/orders/{orderId}', [OrderController::class, 'showOrderDetail'])->name('orders.show'); // For viewing a specific order detail
 
 // Cart Item Management (other than quantity update which is now in order.confirm)
