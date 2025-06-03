@@ -6,26 +6,32 @@ use Illuminate\Database\Eloquent\Model;
 
 class OrderDetail extends Model
 {
-    protected $fillable = ['order_id',
-                            'menu_id',
-                            'courier_id',
-                            'amount',
-                            'price',
-                            'delivery_date',
-                            'delivery_status'];
+    protected $fillable = [
+        'order_id',
+        'menu_id',
+        'courier_id',
+        'amount',
+        'price',
+        'delivery_date',
+        'delivery_status',
+        'custom_name',
+        'shape',
+        'color',
+        'topping'
+    ];
 
-    public function orders()
+    public function order()
     {
         return $this->belongsTo(Order::class);
     }
 
     public function menus()
     {
-        return $this->belongsTo(Menu::class);
+        return $this->belongsTo(Menu::class, 'menu_id');
     }
 
-    // public function couriers()
-    // {
-    //     return $this->belongsTo(Courier::class);
-    // }
+    public function courier()
+    {
+        return $this->belongsTo(Courier::class);
+    }
 }

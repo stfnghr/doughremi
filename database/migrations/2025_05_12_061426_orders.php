@@ -17,6 +17,7 @@ return new class extends Migration
             $table->dateTime('order_date')->nullable();
             $table->double('total_price', 8, 2);
             $table->string('payment_status', 50);
+            $table->string('status')->default('pending')->after('payment_status'); // Or choose a different 'after' location
             $table->timestamp('payment_date')->nullable();
             $table->foreignId('courier_id')->nullable()->constrained('couriers');
             $table->timestamps();

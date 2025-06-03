@@ -17,14 +17,10 @@ class AdminMiddleware
 
         // 2. Check if authenticated user is an admin
         // Make sure your User model has an isAdmin() method or access the is_admin property
-        // if (!Auth::user()->isAdmin()) { // Or Auth::user()->is_admin
-        //     // If not an admin, redirect them or show an error
-        //     // For example, redirect to home with an error message
-        //     // return redirect('/')->with('error', 'You do not have admin access.');
-        //     // Or, abort with a 403 Forbidden error
-        //     abort(403, 'Unauthorized action.');
-        // }
-
+        if (!Auth::user()->isAdmin()) {
+            return redirect('/')->with('error', 'You do not have admin access.');
+            // abort(403, 'Unauthorized action.');
+        }
         return $next($request);
     }
 }

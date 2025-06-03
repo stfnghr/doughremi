@@ -78,7 +78,7 @@
                 </form>
             @endforeach
 
-            <a href="{{ route('custom.index') }}" class="flex flex-col items-center pt-10 no-underline hover:opacity-80 transition-opacity">
+            <a href="{{ route('start.customization') }}" class="flex flex-col items-center pt-10 no-underline hover:opacity-80 transition-opacity">
                 <div class="relative w-full max-w-[200px]">
                     <div
                         class="absolute -top-15 left-1/2 transform -translate-x-1/2 w-40 h-40 flex items-center justify-center z-10">

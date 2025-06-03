@@ -37,19 +37,27 @@ class OrderController extends Controller
         // Handle POST requests
         if ($request->isMethod('post')) {
             // ACTION 1: Add a new custom cookie (from customization page submission)
-            if ($request->has('shape') && $request->has('color') && !$request->input('intent')) {
+            // In the confirm method, when handling POST request for custom cookie
+            if ($request->has('shape') && $request->has('color') && $request->has('topping') && !$request->input('intent')) {
                 $shape = $request->input('shape');
                 $color = $request->input('color');
+                $topping = $request->input('topping');
                 $colorImgPath = $request->input('color_img');
-                $itemName = "Custom Cookie - {$shape} ({$color})";
+                $shapeImgPath = $request->input('shape_img'); // Add this
+                $toppingImgPath = $request->input('topping_img'); // Add this
+
+                $itemName = "Custom Cookie - {$shape} ({$color}) - {$topping}";
                 $newCartItem = [
                     'cart_item_id' => Str::uuid()->toString(),
-                    'id' => 'custom-' . Str::slug($shape . '-' . $color . '-' . Str::random(4)),
+                    'id' => 'custom-' . Str::slug($shape . '-' . $color . '-' . $topping . '-' . Str::random(4)),
                     'name' => $itemName,
                     'quantity' => 1,
                     'price' => $itemPrice,
                     'is_custom' => true,
                     'image_filename' => $colorImgPath ? basename($colorImgPath) : null,
+                    'shape_img' => $shapeImgPath ? basename($shapeImgPath) : null, // Add this
+                    'color_img' => $colorImgPath ? basename($colorImgPath) : null, // Add this
+                    'topping_img' => $toppingImgPath ? basename($toppingImgPath) : null, // Add this
                     'type' => 'custom',
                 ];
                 $cartItemsFromSession[] = $newCartItem;
@@ -102,8 +110,8 @@ class OrderController extends Controller
         $totalAmount = 0;
         if (!empty($cartItems)) {
             foreach ($cartItems as $item) {
-                $quantity = isset($item['quantity']) && is_numeric($item['quantity']) ? (int)$item['quantity'] : 1;
-                $price = isset($item['price']) && is_numeric($item['price']) ? (float)$item['price'] : 0;
+                $quantity = isset($item['quantity']) && is_numeric($item['quantity']) ? (int) $item['quantity'] : 1;
+                $price = isset($item['price']) && is_numeric($item['price']) ? (float) $item['price'] : 0;
                 $totalAmount += $quantity * $price;
             }
         }
@@ -115,8 +123,10 @@ class OrderController extends Controller
             $headTitle = 'Your Shopping Cart';
         }
 
-        if (empty($cartItems) && $request->isMethod('get') && Session::hasOldInput() &&
-            !Session::has('success_cart_update') && !Session::has('error_cart_update') && !Session::has('info')) {
+        if (
+            empty($cartItems) && $request->isMethod('get') && Session::hasOldInput() &&
+            !Session::has('success_cart_update') && !Session::has('error_cart_update') && !Session::has('info')
+        ) {
             Session::flash('info', 'Your cart is now empty.');
         }
 
@@ -150,7 +160,7 @@ class OrderController extends Controller
             'id' => $validatedData['id'],
             'name' => $validatedData['name'],
             'quantity' => 1,
-            'price' => (float)$validatedData['price'],
+            'price' => (float) $validatedData['price'],
             'is_custom' => ($validatedData['type'] ?? 'standard') === 'custom',
             'image_filename' => $validatedData['image'],
             'type' => $validatedData['type'] ?? 'standard',
@@ -192,74 +202,84 @@ class OrderController extends Controller
     }
 
     public function placeOrder(Request $request): RedirectResponse
-{
-    $cartItemsFromSession = Session::get('cart', []);
+    {
+        $cartItemsFromSession = Session::get('cart', []);
 
-    if (empty($cartItemsFromSession)) {
-        return redirect()->route('order.confirm')->with('error_cart_update', 'Your cart is empty. Cannot place order.');
-    }
-
-    $couriers = Courier::all();
-    if ($couriers->isEmpty()) {
-        return redirect()->route('order.confirm')->with('error_cart_update', 'Sorry, no couriers are available at the moment. Please try again later.');
-    }
-    $randomCourier = $couriers->random();
-
-    $orderTotalAmount = 0;
-    foreach ($cartItemsFromSession as $cartItem) {
-        $quantity = $cartItem['quantity'] ?? 1;
-        $price = $cartItem['price'] ?? 0;
-        $orderTotalAmount += $quantity * $price;
-    }
-
-    $order = new Order;
-    $order->user_id = Auth::id();
-    $order->order_date = now();
-    $order->total_price = $orderTotalAmount;
-    $order->payment_status = 'Pending Payment';
-    $order->payment_date = null;
-    $order->courier_id = $randomCourier->id;
-    $order->save();
-
-    // Create order details
-    foreach ($cartItemsFromSession as $cartItem) {
-        $orderDetailData = [
-            'order_id' => $order->id,
-            'amount' => $cartItem['quantity'] ?? 1,
-            'price' => $cartItem['price'] ?? 0,
-            'delivery_date' => now()->addDays(3)->toDateString(),
-            'delivery_status' => 'Pending',
-        ];
-
-        // Only add menu_id for non-custom items
-        if ($cartItem['type'] !== 'custom') {
-            $orderDetailData['menu_id'] = $cartItem['id'];
+        if (empty($cartItemsFromSession)) {
+            return redirect()->route('order.confirm')->with('error_cart_update', 'Your cart is empty. Cannot place order.');
         }
 
-        try {
+        $couriers = Courier::all();
+        if ($couriers->isEmpty()) {
+            return redirect()->route('order.confirm')->with('error_cart_update', 'Sorry, no couriers are available at the moment. Please try again later.');
+        }
+        $randomCourier = $couriers->random();
+
+        $orderTotalAmount = 0;
+        foreach ($cartItemsFromSession as $cartItem) {
+            $quantity = $cartItem['quantity'] ?? 1;
+            $price = $cartItem['price'] ?? 0;
+            $orderTotalAmount += $quantity * $price;
+        }
+
+        $order = new Order;
+        $order->user_id = Auth::id();
+        $order->order_date = now();
+        $order->total_price = $orderTotalAmount;
+        $order->payment_status = 'Pending Payment';
+        $order->payment_date = null;
+        $order->courier_id = $randomCourier->id;
+        $order->save();
+
+        foreach ($cartItemsFromSession as $cartItem) {
+            $orderDetailData = [
+                'order_id' => $order->id,
+                'amount' => $cartItem['quantity'] ?? 1,
+                'price' => $cartItem['price'] ?? 0,
+                'delivery_date' => now()->addDays(3)->toDateString(),
+                'delivery_status' => 'Pending',
+                'courier_id' => $randomCourier->id,
+            ];
+
+            if ($cartItem['type'] === 'custom') {
+                $orderDetailData['custom_name'] = $cartItem['name'];
+
+                // Parse the custom cookie details from the name
+                $nameParts = explode(' - ', $cartItem['name']);
+                if (count($nameParts) >= 3) {
+                    $orderDetailData['shape'] = str_replace('Custom Cookie - ', '', $nameParts[0]);
+                    $colorPart = $nameParts[1];
+                    $orderDetailData['color'] = trim(explode('(', $colorPart)[0]);
+                    $orderDetailData['topping'] = $nameParts[2];
+                }
+            } else {
+                $orderDetailData['menu_id'] = $cartItem['id'];
+            }
+
             OrderDetail::create($orderDetailData);
-        } catch (\Exception $e) {
-            \Log::error('Error creating order detail: '.$e->getMessage());
-            continue;
         }
+
+        Session::forget('cart');
+
+        return redirect()->route('orders.show', ['orderId' => $order->id])
+            ->with('success', 'Order placed successfully!');
     }
 
-    Session::forget('cart');
-
-    return redirect()->route('orders.show', ['orderId' => $order->id])
-        ->with('success', 'Order placed successfully!');
-}
-
-public function showOrders(Request $request): View|RedirectResponse
+    public function showOrders(Request $request): View|RedirectResponse
     {
         if (!Auth::check()) {
             return redirect()->route('login')->with('info', 'Please log in to view your orders!');
         }
 
-        $placedOrders = Order::with(['orderDetail.menu', 'courier'])
-                            ->where('user_id', Auth::id())
-                            ->orderBy('created_at', 'desc')
-                            ->get();
+        $placedOrders = Order::with(['orderDetails.menus', 'courier'])
+            ->where('user_id', Auth::id())
+            ->latest()
+            ->get();
+
+        $sequence = $placedOrders->count();
+        $placedOrders->each(function ($order) use (&$sequence) {
+            $order->user_sequence = $sequence--;
+        });
 
         return view('order', [
             'pageTitle' => 'Your Orders',
@@ -269,25 +289,35 @@ public function showOrders(Request $request): View|RedirectResponse
     }
 
     public function showOrderDetail($orderId): View|RedirectResponse
-{
-    $order = Order::with(['orderDetail', 'orderDetail.menus', 'courier'])->find($orderId);
+    {
+        // Change 'orderDetail' to 'orderDetails' (plural) to match the relationship name
+        $order = Order::with(['orderDetails.menus', 'courier'])
+            ->find($orderId);
 
-    if (!$order || $order->user_id !== Auth::id()) {
-        return redirect()->route('orders.index')->with('error', 'Order not found');
+        if (!$order || $order->user_id !== Auth::id()) {
+            return redirect()->route('orders.index')->with('error', 'Order not found');
+        }
+
+        // Calculate the user's sequence number for this order
+        $userSequence = Order::where('user_id', Auth::id())
+            ->where('created_at', '<=', $order->created_at)
+            ->count();
+
+        $order->user_sequence = $userSequence;
+
+        return view('orderDetail', [
+            'pageTitle' => 'Order Details - ' . $order->user_sequence,
+            'headTitle' => 'Order Details - ' . $order->user_sequence,
+            'order' => $order,
+        ]);
     }
-
-    return view('orderDetail', [
-        'pageTitle' => 'Order Details - ' . $order->id,
-        'headTitle' => 'Order Details - ' . $order->id,
-        'order' => $order,
-    ]);
-}
 
     public function clearOrderHistory(Request $request): RedirectResponse
     {
-        Session::forget('placed_orders');
-        Session::forget('latest_order');
-        // Assuming 'orders.index' is the route name for your showOrders method.
-        return redirect()->route('orders.index')->with('info', 'Your order history has been cleared.');
+        // Delete only the current user's orders
+        Order::where('user_id', Auth::id())->delete();
+
+        return redirect()->route('orders.index')
+            ->with('success', 'Your order history has been cleared successfully.');
     }
 }

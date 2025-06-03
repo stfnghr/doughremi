@@ -84,7 +84,7 @@
             @endforeach
 
             {{-- Link to custom.index remains an <a> tag as it's a navigation --}}
-            <a href="{{ route('custom.index') }}"
+            <a href="{{ route('start.customization') }}"
                 class="flex flex-col items-center pt-10 no-underline hover:opacity-80 transition-opacity">
                 <div class="relative w-full max-w-[200px]">
                     <div

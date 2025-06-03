@@ -126,5 +126,4 @@
             <a href="/">← Back to Home</a>
         </div>
     </div>
-
 </x-layout>

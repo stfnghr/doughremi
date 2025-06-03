@@ -1,27 +1,19 @@
 <?php
 
-use App\Models\User; // Keep if used for type hinting or direct model interaction in routes
-use App\Models\Order; // Keep if used
-use App\Models\OrderItem; // Keep if used
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomOrderController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\AdminMenuController;
+use App\Http\Controllers\Admin\AdminOrderController;
 
 Route::get('/', function () {
     return view('home', ["pageTitle" => "Home"]);
 })->name('home'); // Added name for home route
-
-// // Login Route (assuming UserController has showLoginForm method for GET)
-// Route::get('/login', [UserController::class, 'showLoginForm'])->name('login.form'); // Example: if you have a dedicated method to show form
-// Route::post('/login', [UserController::class, 'login'])->name('login');
-
-
-// // Signup Route (assuming UserController has showSignupForm method for GET)
-// Route::get('/signup', [UserController::class, 'showSignupForm'])->name('signup.form'); // Example
-// Route::post('/signup', [UserController::class, 'signup'])->name('signup');
 
 // Login Route
 Route::get('/login', function () {
@@ -59,9 +51,35 @@ Route::post('/order/place', [OrderController::class, 'placeOrder'])->name('order
 // Order History and Details
 // In routes/web.php
 Route::get('/orders', [OrderController::class, 'showOrders'])->name('orders.index'); // Changed to plural // Changed from /order to /orders for clarity
-Route::get('/orders/clear', [OrderController::class, 'clearOrderHistory'])->name('order.clearHistory');
+Route::get('/orders/clear', [OrderController::class, 'clearOrderHistory'])->name('orders.clearHistory');
 Route::get('/orders/{orderId}', [OrderController::class, 'showOrderDetail'])->name('orders.show'); // For viewing a specific order detail
 
 // Cart Item Management (other than quantity update which is now in order.confirm)
 Route::post('/cart/add', [OrderController::class, 'addItemToCart'])->name('cart.add'); // Should ideally be POST
 Route::post('/cart/remove', [OrderController::class, 'removeItem'])->name('cart.remove');
+
+// =========================
+// ADMIN ROUTES
+// =========================
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Admin Dashboard
+    Route::get('/home', [AdminDashboardController::class, 'index'])->name('home');
+
+    // --- USER MANAGEMENT (Example) ---
+    // Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+    // ... other user management routes
+
+    // --- MENU MANAGEMENT ---
+    Route::get('/menu/add', [AdminMenuController::class, 'create'])->name('menu.add');
+    Route::post('/menu/store', [AdminMenuController::class, 'store'])->name('menu.store');
+    Route::get('/menu', [AdminMenuController::class, 'index'])->name('menu.index');
+    Route::get('/menu/{id}/edit', [AdminMenuController::class, 'edit'])->name('menu.edit');
+    Route::put('/menu/{id}', [AdminMenuController::class, 'update'])->name('menu.update');
+    Route::delete('/menu/{id}', [AdminMenuController::class, 'destroy'])->name('menu.destroy');
+
+    // --- ORDER MANAGEMENT ---
+    Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show'); // This defines admin.orders.show
+    Route::put('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.updateStatus');
+
+});

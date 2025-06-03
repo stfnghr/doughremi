@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
-class UserController extends Controller
+class AdminUserController extends Controller
 {
     /**
      * Display a listing of the users.
