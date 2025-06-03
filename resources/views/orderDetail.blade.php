@@ -92,7 +92,7 @@
                     <h2 class="section-title">Order Status</h2>
                     <div class="mb-4">
                         <span
-                            class="px-2 py-1 rounded {{ $order->payment_status === 'Pending Payment' ? 'bg-yellow-200 text-yellow-800' : ($order->payment_status === 'Completed' ? 'bg-green-200 text-green-800' : 'bg-gray-200 text-gray-800') }}">
+                            class="px-2 py-1 rounded {{ $order->payment_status === 'Unpaid' ? 'bg-yellow-200 text-yellow-800' : ($order->payment_status === 'Paid' ? 'bg-green-200 text-green-800' : 'bg-gray-200 text-gray-800') }}">
                             {{ $order->payment_status ?? 'Unknown' }}
                         </span>
                     </div>

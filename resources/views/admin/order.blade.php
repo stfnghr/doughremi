@@ -73,7 +73,6 @@
             align-items: center;
             gap: 0.5rem;
             min-width: 250px;
-            /* Adjusted for potentially longer display names */
         }
 
         .status-select {
@@ -85,7 +84,6 @@
             background-color: #fff;
             color: #783F12;
             min-width: 150px;
-            /* Adjusted */
         }
 
         .status-select:focus {
@@ -162,8 +160,8 @@
                     @forelse ($orders as $order)
                         <tr class="divide-x divide-gray-200 hover:bg-gray-50">
                             <td class="py-3 px-4 text-center text-sm">#{{ $order->id }}</td>
-                            <td class="py-3 px-4 text-left text-sm">{{ $order->user->name ?? 'N/A (Guest)' }}</td>
-                            <td class="py-3 px-4 text-left text-sm">
+                            <td class="py-3 px-4 text-center text-sm">{{ $order->user->name ?? 'N/A (Guest)' }}</td>
+                            <td class="py-3 px-4 text-center text-sm">
                                 @if ($order->orderDetails && $order->orderDetails->count() > 0)
                                     <ul class="item-details-list">
                                         @foreach ($order->orderDetails as $detail)
@@ -189,15 +187,13 @@
                             {{-- Payment Status Update Form --}}
                             <td class="py-3 px-4 text-center text-sm">
                                 @php
-                                    $currentPaymentStatusKey = strtolower($order->payment_status ?? 'unpaid');
+                                    $currentPaymentStatusKey = ($order->payment_status ?? 'Unpaid');
                                 @endphp
                                 <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST"
                                     class="status-update-form">
                                     @csrf
                                     @method('PUT')
-                                    {{-- The select name is now 'payment_status' --}}
                                     <select name="payment_status" class="status-select">
-                                        {{-- Loop through the associative array [value => display_name] --}}
                                         @foreach ($availablePaymentStatuses as $statusKey => $displayName)
                                             <option value="{{ $statusKey }}"
                                                 {{ $currentPaymentStatusKey == $statusKey ? 'selected' : '' }}>
@@ -210,8 +206,8 @@
                                 <div
                                     class="mt-1 text-xs
                                     @switch($currentPaymentStatusKey)
-                                        @case('unpaid') @break
-                                        @case('paid') text-green-600 @break
+                                        @case('Unpaid') @break
+                                        @case('Paid') text-green-600 @break
                                         @default
                                     @endswitch
                                 ">

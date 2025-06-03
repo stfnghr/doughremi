@@ -13,16 +13,16 @@ class AdminOrderController extends Controller
 {
     // Define allowed PAYMENT statuses
     protected $allowedPaymentStatuses = [
-        'unpaid',       // Represents "Pending Payment"
-        'paid',         // Represents "Paid"
+        'Unpaid',       // Represents "Pending Payment "
+        'Paid',         // Represents "Paid"
     ];
 
     // Helper to get display names for statuses
     protected function getPaymentStatusDisplayName($statusKey)
     {
         $names = [
-            'unpaid' => 'Pending Payment',
-            'paid' => 'Paid',
+            'Unpaid',
+            'Paid',
         ];
         return $names[$statusKey] ?? ucfirst(str_replace('_', ' ', $statusKey));
     }

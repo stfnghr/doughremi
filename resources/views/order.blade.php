@@ -106,7 +106,7 @@
                                     <span class="text-gray-700">Total: <span class="font-bold">IDR
                                             {{ number_format($order->total_price ?? 0, 0, ',', '.') }}</span></span>
                                     <span
-                                        class="text-xs font-medium px-2 py-0.5 rounded {{ $order->payment_status === 'Pending Payment' ? 'bg-yellow-200 text-yellow-800' : ($order->payment_status === 'Paid' ? 'bg-green-200 text-green-800' : 'bg-gray-200 text-gray-800') }}">
+                                        class="text-xs font-medium px-2 py-0.5 rounded {{ $order->payment_status === 'Unpaid' ? 'bg-yellow-200 text-yellow-800' : ($order->payment_status === 'Paid' ? 'bg-green-200 text-green-800' : 'bg-gray-200 text-gray-800') }}">
                                         {{ $order->payment_status ?? 'Unknown' }}
                                     </span>
                                 </div>
