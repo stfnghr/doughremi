@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 // use App\Models\User; // If you need to manage users
 
-class DashboardController extends Controller
+class AdminDashboardController extends Controller
 {
     public function index()
     {

@@ -31,11 +31,11 @@
             }
             .profile-info p {
                 font-size: 1.125rem; /* 18px */
-                color: #6b4f4f;
+                color: #783F12;
                 margin-bottom: 0.75rem; /* 12px */
             }
             .profile-info strong {
-                color: #8a6c5a;
+                color: #783F12;
             }
             .logout-btn {
                 display: inline-block;
@@ -58,7 +58,7 @@
                 margin-top: 1rem;
                 margin-right: 0.5rem; /* Spacing from logout button if on same line */
                 padding: 0.75rem 1.5rem;
-                background-color: #a07d6a; /* Theme color */
+                background-color: #783F12; /* Theme color */
                 color: white;
                 border: none;
                 border-radius: 0.5rem;
@@ -96,7 +96,7 @@
              </div>
         @endif
 
-        <a href="{{ route('order.index') }}" class="orders-link-btn">View My Orders</a>
+        <a href="{{ route('orders.index') }}" class="orders-link-btn">View My Orders</a>
 
         {{-- Correct the route name in the form action --}}
         <form action="{{ route('logout') }}" method="POST" style="display: inline;">

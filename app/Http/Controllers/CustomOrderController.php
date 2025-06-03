@@ -41,21 +41,42 @@ class CustomOrderController extends Controller
         $cookieShapes = [
             ['img' => 'circle.png', 'name' => 'Circle'],
             ['img' => 'heart.png', 'name' => 'Heart'],
-            // Add more shapes as needed
         ];
 
         $circleCookies = [ // Colors/Variations for Circle shape
             ['img' => 'circle_basic.png', 'name' => 'Basic'],
             ['img' => 'circle_red.png', 'name' => 'Red'],
             ['img' => 'circle_yellow.png', 'name' => 'Yellow'],
-            // ... more circle variations
+            ['img' => 'circle_green.png', 'name' => 'Green'],
+            ['img' => 'circle_blue.png', 'name' => 'Blue'],
+            ['img' => 'circle_purple.png', 'name' => 'Purple'],
+            ['img' => 'circle_pink.png', 'name' => 'Pink'],
+            ['img' => 'circle_white.png', 'name' => 'White'],
+            ['img' => 'circle_orange.png', 'name' => 'Orange'],
+            ['img' => 'circle_brown.png', 'name' => 'Brown'],
         ];
 
         $heartCookies = [ // Colors/Variations for Heart shape
             ['img' => 'heart_basic.png', 'name' => 'Basic'],
             ['img' => 'heart_red.png', 'name' => 'Red'],
             ['img' => 'heart_yellow.png', 'name' => 'Yellow'],
-            // ... more heart variations
+            ['img' => 'heart_green.png', 'name' => 'Green'],
+            ['img' => 'heart_blue.png', 'name' => 'Blue'],
+            ['img' => 'heart_purple.png', 'name' => 'Purple'],
+            ['img' => 'heart_pink.png', 'name' => 'Pink'],
+            ['img' => 'heart_white.png', 'name' => 'White'],
+            ['img' => 'heart_orange.png', 'name' => 'Orange'],
+            ['img' => 'heart_brown.png', 'name' => 'Brown'],
+        ];
+
+        $toppings = [
+            ['img' => 'shaped_sprinkles.png', 'name' => 'Shaped Sprinkles'],
+            ['img' => 'rainbow_sprinkles.png', 'name' => 'Rainbow Sprinkles'],
+            ['img' => 'choco_sprinkles.png', 'name' => 'Choco Sprinkles'],
+            ['img' => 'mix_sprinkles.png', 'name' => 'Mix Sprinkles'],
+            ['img' => 'marshmallow.png', 'name' => 'Marshmallow'],
+            ['img' => 'chocolate.png', 'name' => 'Chocolate'],
+            ['img' => 'none.png', 'name' => 'None'], 
         ];
 
         $customBasePrice = 12000; // Example base price
@@ -65,6 +86,7 @@ class CustomOrderController extends Controller
             'cookieShapes' => $cookieShapes,
             'circleCookies' => $circleCookies,
             'heartCookies' => $heartCookies,
+            'toppings' => $toppings,
             'customBasePrice' => $customBasePrice,
         ]);
     }

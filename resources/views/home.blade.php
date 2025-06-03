@@ -44,10 +44,8 @@
 
                 <div class="text-center pt-5">
                     <p class="font-bold text-[#783F12]">Freshly Made Daily</p>
-                    <p class="text-sm text-[#783F12]">All our baked goods are prepared</p>
-                    <p class="text-sm text-[#783F12]">fresh every day—no shortcuts, no</p>
-                    <p class="text-sm text-[#783F12]">preservatives—just that straight-</p>
-                    <p class="text-sm text-[#783F12]">from-the-oven goodness.</p>
+                    <p class="text-sm text-[#783F12]">All our baked goods are prepared fresh every day—no shortcuts, no
+                        preservatives—just that straight-from-the-oven goodness.</p>
                 </div>
             </div>
 
@@ -60,9 +58,8 @@
 
                 <div class="text-center pt-5">
                     <p class="font-bold text-[#783F12]">Custom Everything</p>
-                    <p class="text-sm text-[#783F12]">We let you choose the flavors,</p>
-                    <p class="text-sm text-[#783F12]"> shapes, and decorations to make</p>
-                    <p class="text-sm text-[#783F12]">every bite your own.</p>
+                    <p class="text-sm text-[#783F12]">We let you choose the flavors, shapes, and decorations to make
+                        every bite your own.</p>
                 </div>
             </div>
 
@@ -75,9 +72,8 @@
 
                 <div class="text-center pt-5">
                     <p class="font-bold text-[#783F12]">We’re Here for Every Celebration</p>
-                    <p class="text-sm text-[#783F12]">From birthdays to milestones and</p>
-                    <p class="text-sm text-[#783F12]">everything in between, we’re honored</p>
-                    <p class="text-sm text-[#783F12]">to be part of your special moments.</p>
+                    <p class="text-sm text-[#783F12]">From birthdays to milestones and everything in between, we’re
+                        honored to be part of your special moments.</p>
                 </div>
             </div>
         </div>
@@ -104,39 +100,37 @@
                 <!-- Image 1 -->
                 <div class="w-60 ">
                     <div class="relative aspect-square w-full overflow-hidden rounded-full mb-4">
-                        <img src="{{ asset('images/special1.png') }}" alt="special1"
+                        <img src="{{ asset('images/step1.png') }}" alt="special1"
                             class="absolute h-full w-full object-cover">
                     </div>
                     <div class="text-center pt-2">
-                        <p class="font-bold text-[#783F12]">Freshly Made Daily</p>
-                        <p class="text-sm text-[#783F12]">All our baked goods are prepared fresh every day—no shortcuts,
-                            no preservatives—just that straight-from-the-oven goodness.</p>
+                        <p class="font-bold text-[#783F12]">Visit Our Website</p>
+                        <p class="text-sm text-[#783F12]">Firstly, go to our website and click 'menu' option.</p>
                     </div>
                 </div>
 
                 <!-- Image 2 -->
                 <div class="w-60 ">
                     <div class="relative aspect-square w-full overflow-hidden rounded-full mb-4">
-                        <img src="{{ asset('images/special2.png') }}" alt="special1"
+                        <img src="{{ asset('images/step2.png') }}" alt="special1"
                             class="absolute h-full w-full object-cover">
                     </div>
                     <div class="text-center pt-2">
-                        <p class="font-bold text-[#783F12]">Freshly Made Daily</p>
-                        <p class="text-sm text-[#783F12]">All our baked goods are prepared fresh every day—no shortcuts,
-                            no preservatives—just that straight-from-the-oven goodness.</p>
+                        <p class="font-bold text-[#783F12]">Custom a Cookie?</p>
+                        <p class="text-sm text-[#783F12]">If you want an 'another level' cookie than our basics, choose
+                            'custom a cookie'.</p>
                     </div>
                 </div>
 
                 <!-- Image 3 -->
                 <div class="w-60 ">
                     <div class="relative aspect-square w-full overflow-hidden rounded-full mb-4">
-                        <img src="{{ asset('images/special3.png') }}" alt="special1"
+                        <img src="{{ asset('images/step3.png') }}" alt="special1"
                             class="absolute h-full w-full object-cover">
                     </div>
                     <div class="text-center pt-2">
-                        <p class="font-bold text-[#783F12]">Freshly Made Daily</p>
-                        <p class="text-sm text-[#783F12]">All our baked goods are prepared fresh every day—no shortcuts,
-                            no preservatives—just that straight-from-the-oven goodness.</p>
+                        <p class="font-bold text-[#783F12]">Enjoy Customizing!</p>
+                        <p class="text-sm text-[#783F12]">Choose your own cookie shapes, colors, and toppings~</p>
                     </div>
                 </div>
 
@@ -195,16 +189,11 @@
             <div class="absolute bottom-0 left-0 p-8 md:p-40 text-left">
                 <div class="max-w-md space-y-4 md:space-y-6">
                     <h1 class="text-4xl text-[#FAF5F2] md:text-5xl font-bold leading-tight">
-                        It's not just a<br>
-                        package, it's a<br>
-                        cookie party in<br>
-                        a box!
+                        It's not just a package, it's a cookie party in a box!
                     </h1>
 
                     <p class="text-lg text-[#783F12] md:text-xl space-y-2">
-                        From the moment it leaves our hands<br>
-                        to the moment it reaches yours,<br>
-                        every delivery is handled with care.
+                        From the moment it leaves our hands to the moment it reaches yours, every delivery is handled with care.
                     </p>
                 </div>
             </div>

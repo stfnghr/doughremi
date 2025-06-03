@@ -11,8 +11,8 @@ class Menu extends Model
                             'categories',
                             'image'];
 
-    public function orderItems()
+    public function orderDetails()
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->hasMany(OrderDetail::class);
     }
 }

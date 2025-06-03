@@ -36,10 +36,12 @@
             });
             document.addEventListener('click', function(event) {
                 const dropdownButton = document.getElementById('dropdown-button');
-                const dropdown = dropdownButton.nextElementSibling;
-                if (!dropdownButton.contains(event.target) && !dropdown.contains(event.target)) {
-                    dropdown.classList.add('hidden');
-                    dropdownButton.setAttribute('aria-expanded', 'false');
+                if (dropdownButton) { // Check if dropdownButton exists
+                    const dropdown = dropdownButton.nextElementSibling;
+                    if (dropdown && !dropdownButton.contains(event.target) && !dropdown.contains(event.target)) {
+                        dropdown.classList.add('hidden');
+                        dropdownButton.setAttribute('aria-expanded', 'false');
+                    }
                 }
             });
         </script>
@@ -49,37 +51,34 @@
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-8 justify-items-center">
-            @php
-                $sweetPickPrice = 10000; // 10k
-                $cookies = [
-                    ['id' => 'chocochip', 'img' => 'chocochip_cookie.png', 'name' => 'Chocolate Chip', 'price' => $sweetPickPrice],
-                    ['id' => 'double-choc', 'img' => 'chocolate_cookie.png', 'name' => 'Double Chocolate', 'price' => $sweetPickPrice],
-                    ['id' => 'vanilla-bean', 'img' => 'vanilla_cookie.png', 'name' => 'Vanilla Bean', 'price' => $sweetPickPrice],
-                    ['id' => 'strawberry-cream', 'img' => 'strawberry_cookie.png', 'name' => 'Strawberry Cream', 'price' => $sweetPickPrice],
-                    ['id' => 'matcha-green', 'img' => 'matcha_cookie.png', 'name' => 'Matcha Green Tea', 'price' => $sweetPickPrice],
-                    ['id' => 'salted-caramel', 'img' => 'saltedcaramel_cookie.png', 'name' => 'Salted Caramel', 'price' => $sweetPickPrice],
-                    ['id' => 'lotus-biscoff', 'img' => 'biscoff_cookie.png', 'name' => 'Lotus Biscoff', 'price' => $sweetPickPrice],
-                ];
-            @endphp
-
             @foreach ($cookies as $cookie)
-                <a href="{{ route('cart.add', ['id' => $cookie['id'], 'name' => $cookie['name'], 'price' => $cookie['price'], 'image' => $cookie['img'], 'type' => 'sweet-pick']) }}"
-                   class="flex flex-col items-center pt-10 no-underline hover:opacity-80 transition-opacity">
-                    <div class="relative w-full max-w-[200px]">
-                        <div
-                            class="absolute -top-15 left-1/2 transform -translate-x-1/2 w-40 h-40 flex items-center justify-center z-10">
-                            <img src="{{ asset('images/' . $cookie['img']) }}" alt="{{ $cookie['name'] }} Cookie"
-                                class="object-contain max-h-36" />
+                {{-- Each cookie is now a form that submits to cart.add --}}
+                <form action="{{ route('cart.add') }}" method="POST" class="contents">
+                    @csrf
+                    <input type="hidden" name="id" value="{{ $cookie->id }}"> {{-- Use the database ID --}}
+                    <input type="hidden" name="name" value="{{ $cookie->name }}">
+                    <input type="hidden" name="price" value="{{ $cookie->price }}">
+                    <input type="hidden" name="image" value="{{ $cookie->image }}">
+                    <input type="hidden" name="type" value="sweet-pick">
+
+                    <button type="submit"
+                       class="flex flex-col items-center pt-10 no-underline hover:opacity-80 transition-opacity focus:outline-none appearance-none text-left">
+                        <div class="relative w-full max-w-[200px]">
+                            <div
+                                class="absolute -top-15 left-1/2 transform -translate-x-1/2 w-40 h-40 flex items-center justify-center z-10">
+                                <img src="{{ asset('images/' . $cookie->image) }}" alt="{{ $cookie->name }} Cookie"
+                                    class="object-contain max-h-36" />
+                            </div>
+                            <div
+                                class="w-[180px] h-[150px] bg-[#EFE5D9] rounded-[35px] pt-20 flex items-center justify-center p-4">
+                                <p class="text-[#783F12] text-center">{{ $cookie->name }}</p>
+                            </div>
                         </div>
-                        <div
-                            class="w-[180px] h-[150px] bg-[#EFE5D9] rounded-[35px] pt-20 flex items-center justify-center p-4">
-                            <p class="text-[#783F12] text-center">{{ $cookie['name'] }}</p>
-                        </div>
-                    </div>
-                </a>
+                    </button>
+                </form>
             @endforeach
 
-            <a href="{{ route('custom.index') }}" class="flex flex-col items-center pt-10 no-underline hover:opacity-80 transition-opacity">
+            <a href="{{ route('start.customization') }}" class="flex flex-col items-center pt-10 no-underline hover:opacity-80 transition-opacity">
                 <div class="relative w-full max-w-[200px]">
                     <div
                         class="absolute -top-15 left-1/2 transform -translate-x-1/2 w-40 h-40 flex items-center justify-center z-10">

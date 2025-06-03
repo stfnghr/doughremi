@@ -17,32 +17,26 @@ class MenuController extends Controller
     {
         $sweetPickMenus = Menu::where('categories', 'Sweet Pick')->get();
 
-        $sweetPickPrice = 10000; 
-
         return view('menu1', [
             'pageTitle' => 'Sweet Pick',
             'headTitle' => 'Sweet Pick Menus',
-            'cookies' => $sweetPickMenus, 
-            'sweetPickPrice' => $sweetPickPrice 
+            'cookies' => $sweetPickMenus,
         ]);
     }
 
     /**
-     * Display the "Joy Box" menu page (Example for menu2).
+     * Display the "Joy Box" menu page.
      *
      * @return \Illuminate\View\View
      */
     public function joyBox(): View
     {
         $joyBoxMenus = Menu::where('categories', 'Joy Box')->get();
-        
-        $joyBoxPrice = 250000; 
 
         return view('menu2', [
             'pageTitle' => 'Joy Box',
             'headTitle' => 'Joy Box Menus',
-            'cookies' => $joyBoxMenus, 
-            'joyBoxPrice' => $joyBoxPrice 
+            'joyBoxes' => $joyBoxMenus, // Changed variable name for clarity
         ]);
     }
 }

@@ -1,7 +1,7 @@
 {{-- File: resources/views/login.blade.php --}}
 <x-layout>
     <x-slot:layoutTitle>{{ $pageTitle }}</x-slot:layoutTitle>
-    <x-slot:headTitle>Login</x-slot:headTitle>
+    <x-slot:headTitle>Log In</x-slot:headTitle>
 
     @push('styles')
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -80,7 +80,7 @@
     @endpush
 
     <div class="login-container">
-        <h1 class="login-title">Login</h1>
+        <h1 class="login-title">Log In</h1>
 
         @if (session('info'))
             <div class="mb-4 p-3 bg-blue-100 border border-blue-300 text-blue-700 rounded-md text-sm">
@@ -126,5 +126,4 @@
             <a href="/">← Back to Home</a>
         </div>
     </div>
-
 </x-layout>
