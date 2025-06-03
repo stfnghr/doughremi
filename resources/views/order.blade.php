@@ -70,8 +70,8 @@
         @endif
 
         <div class="max-w-3xl mx-auto text-center">
-            <div class="relative flex justify-center items-center mb-6">
-                <h1 class="text-2xl font-bold text-center" style="color: #783F12;">Your Orders</h1>
+            <div class="relative flex justify-center items-center m-6">
+                <h1 class="text-3xl font-coiny text-center" style="color: #783F12;">Your Orders</h1>
 
                 @if (count($placedOrders) > 0)
                     <a href="{{ route('orders.clearHistory') }}"
