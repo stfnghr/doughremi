@@ -226,7 +226,7 @@ class OrderController extends Controller
         $order->user_id = Auth::id();
         $order->order_date = now();
         $order->total_price = $orderTotalAmount;
-        $order->payment_status = 'Pending Payment';
+        $order->payment_status = 'Unpaid';
         $order->payment_date = null;
         $order->courier_id = $randomCourier->id;
         $order->save();
