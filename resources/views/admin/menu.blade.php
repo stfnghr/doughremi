@@ -150,7 +150,7 @@
 
             <div class="flex justify-center items-center p-10">
                 <a href="{{ route('admin.menu.add') }}"
-                    class="bg-green-600 hover:bg-green-800 text-yellow-50 px-6 py-2 rounded-lg text-sm">
+                    class="bg-[#A4B38C] hover:bg-[#6C8149] text-[#FAF5F2] px-6 py-2 rounded-lg text-md font-bold">
                     ADD MENU ITEM
                 </a>
             </div>
