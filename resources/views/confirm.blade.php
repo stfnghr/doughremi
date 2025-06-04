@@ -164,17 +164,9 @@
                                                         {{ $itemQuantity <= 1 ? 'disabled' : '' }}>-</button>
                                                 </form>
 
-                                                {{-- quantity update --}}
-                                                <form action="{{ route('order.confirm') }}" method="POST"
-                                                    class="contents">
-                                                    @csrf
-                                                    <input type="hidden" name="intent" value="update_quantity">
-                                                    <input type="hidden" name="cart_item_id"
-                                                        value="{{ $item['cart_item_id'] }}">
-                                                    <input type="number" name="quantity" value="{{ $itemQuantity }}"
-                                                        min="1"
-                                                        class="w-8 text-center border-t border-b text-xs p-0.5 bg-white">
-                                                </form>
+                                                <input type="number" name="quantity" value="{{ $itemQuantity }}"
+                                                    min="1"
+                                                    class="w-8 text-center border-t border-b text-xs p-0.5 bg-white">
 
                                                 <form action="{{ route('order.confirm') }}" method="POST"
                                                     class="contents">
