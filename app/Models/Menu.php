@@ -15,4 +15,9 @@ class Menu extends Model
     {
         return $this->hasMany(OrderDetail::class);
     }
+
+    public function getImageUrlAttribute()
+    {
+        return Storage::url('menu_images/' . $this->image);
+    }
 }

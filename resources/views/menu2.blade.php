@@ -3,8 +3,8 @@
     <x-slot:headTitle>Joy Box Menus</x-slot:headTitle>
 
     <div class="bg-[#FAF5F2] p-8">
-        <div class="flex justify-center items-center space-x-5 relative">
-            <h1 class="text-4xl font-bold text-[#783F12]">Joy Box</h1>
+        <div class="flex justify-center items-center space-x-5 relative mt-8">
+            <h1 class="text-5xl font-coiny text-[#783F12]">Joy Box</h1>
             <div class="relative inline-block text-left">
                 <button type="button" class="focus:outline-none" id="dropdown-button" aria-expanded="false"
                     aria-haspopup="true">
@@ -45,7 +45,7 @@
             });
         </script>
 
-        <div class="justify-items-center my-8 text-[#783F12]">
+        <div class="justify-items-center mt-3 mb-10 text-[#783F12]">
             <p>Hamper (non-custom, based on templates) - 250k</p>
         </div>
 
@@ -94,7 +94,7 @@
                     </div>
                     <div
                         class="w-[180px] h-[150px] bg-[#EFE5D9] rounded-[35px] pt-20 flex items-center justify-center p-4">
-                        <p class="text-[#783F12] text-center">custom a cookie?</p>
+                        <p class="text-[#783F12] text-center text-lg font-coiny">custom a cookie?</p>
                     </div>
                 </div>
             </a>

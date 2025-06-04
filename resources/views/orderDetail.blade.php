@@ -72,8 +72,8 @@
     <div class="container mx-auto px-4 py-8">
         <div class="invoice-container">
             <div class="invoice-header">
-                <h1 class="text-2xl font-bold" style="color: #783F12;">ORDER INVOICE</h1>
-                <p class="text-gray-600 mt-2">Order #{{ $order->user_sequence }}</p>
+                <h1 class="text-2xl font-coiny" style="color: #783F12;">ORDER INVOICE</h1>
+                <p class="text-gray-600">Order #{{ $order->user_sequence }}</p>
                 <p class="text-sm text-gray-500">
                     {{ \Carbon\Carbon::parse($order->order_date)->format('M d, Y H:i') }}
                 </p>

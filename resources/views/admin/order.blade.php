@@ -114,9 +114,8 @@
     <div class="container-custom">
         <a href="{{ route('admin.home') }}" class="back-link">&larr; Back</a>
 
-        <div class="flex justify-center items-center my-6">
-            <h1 class="font-coiny font-bold text-4xl sm:text-5xl" style="color: #783F12;">{{ $pageTitle ?? 'Orders' }}
-            </h1>
+        <div class="flex flex-col justify-center items-center my-6 text-center">
+            <h1 class="font-coiny text-4xl sm:text-5xl mb-4" style="color: #783F12;">{{ $pageTitle ?? 'Orders' }}</h1>
         </div>
 
         @if (session('success'))
@@ -187,7 +186,7 @@
                             {{-- Payment Status Update Form --}}
                             <td class="py-3 px-4 text-center text-sm">
                                 @php
-                                    $currentPaymentStatusKey = ($order->payment_status ?? 'Unpaid');
+                                    $currentPaymentStatusKey = $order->payment_status ?? 'Unpaid';
                                 @endphp
                                 <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST"
                                     class="status-update-form">

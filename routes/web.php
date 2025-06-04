@@ -70,12 +70,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // ... other user management routes
 
     // --- MENU MANAGEMENT ---
+    Route::get('/menu', [AdminMenuController::class, 'index'])->name('menu.index');
     Route::get('/menu/add', [AdminMenuController::class, 'create'])->name('menu.add');
     Route::post('/menu/store', [AdminMenuController::class, 'store'])->name('menu.store');
-    Route::get('/menu', [AdminMenuController::class, 'index'])->name('menu.index');
-    Route::get('/menu/{id}/edit', [AdminMenuController::class, 'edit'])->name('menu.edit');
-    Route::put('/menu/{id}', [AdminMenuController::class, 'update'])->name('menu.update');
-    Route::delete('/menu/{id}', [AdminMenuController::class, 'destroy'])->name('menu.destroy');
+    // Route::get('/menu/{id}/edit', [AdminMenuController::class, 'edit'])->name('menu.edit');
+    // Route::put('/menu/{id}', [AdminMenuController::class, 'update'])->name('menu.update');
+    // Route::delete('/menu/{id}', [AdminMenuController::class, 'destroy'])->name('menu.destroy');
 
     // --- ORDER MANAGEMENT ---
     Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
