@@ -120,31 +120,34 @@
                                 $itemQuantity = $item['quantity'] ?? 1;
                                 $itemPrice = $item['price'] ?? 0;
                             @endphp
-                            <li class="flex justify-between items-start border-b border-gray-300/50 pb-3 last:border-b-0">
+                            <li
+                                class="flex justify-between items-start border-b border-gray-300/50 pb-3 last:border-b-0">
                                 <div class="flex-grow flex items-center">
                                     {{-- Custom Cookie Preview --}}
                                     @if ($item['type'] === 'custom' && isset($item['shape_img']) && isset($item['color_img']) && isset($item['topping_img']))
                                         <div class="cookie-preview">
-                                            <img src="{{ asset('images/' . $item['shape_img']) }}" 
-                                                class="cookie-layer" alt="Cookie Shape">
-                                            <img src="{{ asset('images/' . $item['color_img']) }}" 
-                                                class="cookie-layer" alt="Cookie Color">
-                                            <img src="{{ asset('images/' . $item['topping_img']) }}" 
+                                            <img src="{{ asset('images/' . $item['shape_img']) }}" class="cookie-layer"
+                                                alt="Cookie Shape">
+                                            <img src="{{ asset('images/' . $item['color_img']) }}" class="cookie-layer"
+                                                alt="Cookie Color">
+                                            <img src="{{ asset('images/' . $item['topping_img']) }}"
                                                 class="cookie-layer" alt="Cookie Topping">
                                         </div>
                                     @elseif (isset($item['image_filename']) && !empty($item['image_filename']))
                                         {{-- Regular menu item image --}}
-                                        <img src="{{ asset('images/' . $item['image_filename']) }}" 
+                                        <img src="{{ asset('images/' . $item['image_filename']) }}"
                                             alt="{{ $item['name'] ?? 'Item' }}"
                                             class="w-16 h-16 object-contain mr-4 rounded">
                                     @else
-                                        <div class="w-16 h-16 bg-gray-200 mr-4 rounded flex items-center justify-center text-xs text-gray-500">
+                                        <div
+                                            class="w-16 h-16 bg-gray-200 mr-4 rounded flex items-center justify-center text-xs text-gray-500">
                                             No Img
                                         </div>
                                     @endif
 
                                     <div>
-                                        <span class="font-medium block" style="color: #783F12;">{{ $item['name'] ?? 'Unknown Item' }}</span>
+                                        <span class="font-medium block"
+                                            style="color: #783F12;">{{ $item['name'] ?? 'Unknown Item' }}</span>
 
                                         <div class="flex items-center space-x-1 mt-1">
                                             <span class="text-xs text-gray-500 mr-1">Qty:</span>
@@ -161,9 +164,17 @@
                                                         {{ $itemQuantity <= 1 ? 'disabled' : '' }}>-</button>
                                                 </form>
 
-                                                <span class="w-8 text-center border-t border-b text-xs p-0.5 bg-white">
-                                                    {{ $itemQuantity }}
-                                                </span>
+                                                {{-- quantity update --}}
+                                                <form action="{{ route('order.confirm') }}" method="POST"
+                                                    class="contents">
+                                                    @csrf
+                                                    <input type="hidden" name="intent" value="update_quantity">
+                                                    <input type="hidden" name="cart_item_id"
+                                                        value="{{ $item['cart_item_id'] }}">
+                                                    <input type="number" name="quantity" value="{{ $itemQuantity }}"
+                                                        min="1"
+                                                        class="w-8 text-center border-t border-b text-xs p-0.5 bg-white">
+                                                </form>
 
                                                 <form action="{{ route('order.confirm') }}" method="POST"
                                                     class="contents">
@@ -201,7 +212,8 @@
                 </div>
 
                 {{-- Right Column: Payment Summary --}}
-                <div class="md:w-1/3 bg-[#FBF5EF] p-6 rounded-2xl shadow-md border border-gray-200 h-fit md:sticky md:top-8">
+                <div
+                    class="md:w-1/3 bg-[#FBF5EF] p-6 rounded-2xl shadow-md border border-gray-200 h-fit md:sticky md:top-8">
                     <h2 class="text-xl font-semibold mb-4 border-b pb-2" style="color: #783F12;">Payment Summary</h2>
                     <div class="border-t border-gray-300/50 pt-4 mt-4">
                         <div class="flex justify-between items-center text-xl font-bold" style="color: #783F12;">
