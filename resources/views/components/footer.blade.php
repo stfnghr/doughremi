@@ -8,7 +8,7 @@
                 </div>
 
                 <div class="p-1">
-                    <h1 class="font-bold text-3xl text-[#783F12]"">Dough Re-Mi</h1>
+                    <h1 class="font-coiny text-4xl text-[#783F12]"">Dough Re-Mi</h1>
                 </div>
             </div>
 

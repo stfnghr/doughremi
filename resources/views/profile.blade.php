@@ -1,41 +1,107 @@
 <x-layout>
-    <x-slot name="headTitle">Profile</x-slot>
-    <x-slot name="layoutTitle">My Profile</x-slot>
+    <x-slot:layoutTitle>{{ $pageTitle ?? 'Profile' }}</x-slot:layoutTitle>
+    <x-slot:headTitle>Your Profile</x-slot:headTitle>
 
-    <div class="max-w-4xl mx-auto px-4 py-8">
-        <h1 class="text-center text-5xl font-bold text-[#783F12] mb-10">My Profile</h1>
-        
-        <div class="bg-[#EFE5D9] rounded-[35px] p-16 relative overflow-hidden">
-            <div class="max-w-md">
-                <div class="mb-10">
-                    <h2 class="text-3xl font-bold text-[#783F12] mb-2">Name</h2>
-                    <p class="text-2xl text-[#783F12]">Igny Romy</p>
-                </div>
-                
-                <div class="mb-10">
-                    <h2 class="text-3xl font-bold text-[#783F12] mb-2">Phone Number</h2>
-                    <p class="text-2xl text-[#783F12]">0813456789</p>
-                </div>
-                
-                <div>
-                    <h2 class="text-3xl font-bold text-[#783F12] mb-2">Email</h2>
-                    <p class="text-2xl text-[#783F12]">iromy@gmail.com</p>
-                </div>
+    @push('styles')
+        {{-- Styles remain the same --}}
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Coiny&family=Quicksand:wght@400;500;700&display=swap"
+            rel="stylesheet">
+        <style>
+            body {
+                font-family: 'Quicksand', sans-serif;
+                background-color: #FAF5F2;
+            }
+            .profile-container {
+                max-width: 600px;
+                margin: 3rem auto;
+                padding: 2rem;
+                background-color: #FBF5EF;
+                border-radius: 1rem;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+                border: 1px solid #e5dcd4;
+                text-align: center;
+            }
+            .profile-title {
+                font-family: 'Coiny', cursive;
+                color: #783F12;
+                font-size: 2.25rem; /* 36px */
+                margin-bottom: 1.5rem;
+            }
+            .profile-info p {
+                font-size: 1.125rem; /* 18px */
+                color: #783F12;
+                margin-bottom: 0.75rem; /* 12px */
+            }
+            .profile-info strong {
+                color: #783F12;
+            }
+            .logout-btn {
+                display: inline-block;
+                margin-top: 1.5rem; /* 24px */
+                padding: 0.75rem 1.5rem; /* 12px 24px */
+                background-color: #c0392b; /* A reddish color for logout */
+                color: white;
+                border: none;
+                border-radius: 0.5rem;
+                font-weight: bold;
+                text-decoration: none;
+                transition: background-color 0.3s ease;
+                cursor: pointer; /* Add cursor pointer for button */
+            }
+            .logout-btn:hover {
+                background-color: #a93226;
+            }
+             .orders-link-btn {
+                display: inline-block;
+                margin-top: 1rem;
+                margin-right: 0.5rem; /* Spacing from logout button if on same line */
+                padding: 0.75rem 1.5rem;
+                background-color: #783F12; /* Theme color */
+                color: white;
+                border: none;
+                border-radius: 0.5rem;
+                font-weight: bold;
+                text-decoration: none;
+                transition: background-color 0.3s ease;
+            }
+            .orders-link-btn:hover {
+                background-color: #8a6c5a;
+            }
+        </style>
+    @endpush
+
+    <div class="profile-container">
+        {{-- Use object syntax -> and check if user exists --}}
+        <h1 class="profile-title">Welcome, {{ $user->name ?? 'User' }}!</h1>
+
+        @if (session('success'))
+            <div class="mb-4 p-3 bg-green-100 border border-green-300 text-green-700 rounded-md text-sm">
+                {{ session('success') }}
             </div>
-            
-            <!-- Cookie image with splatter effect -->
-            <div class="absolute right-16 top-1/2 transform -translate-y-1/2">
-                <div class="relative">
-                    <!-- Cookie image instead of circle -->
-                    <img src="{{ asset('images/brown_cookie.png') }}" alt="cookie" class="w-52 h-52 object-contain">
-                    
-                    <!-- Splatter effects -->
-                    <div class="absolute -top-5 -right-5 w-12 h-12 bg-[#EFE5D9] rounded-full"></div>
-                    <div class="absolute top-2 -right-10 w-8 h-8 bg-[#EFE5D9] rounded-full"></div>
-                    <div class="absolute -top-8 right-5 w-6 h-6 bg-[#EFE5D9] rounded-full"></div>
-                    <div class="absolute -top-3 right-10 w-4 h-4 bg-[#EFE5D9] rounded-full"></div>
-                </div>
+        @endif
+
+        {{-- Check if $user is not null before accessing properties --}}
+        @if($user)
+            <div class="profile-info">
+                {{-- Use object syntax -> --}}
+                <p><strong>Name:</strong> {{ $user->name ?? 'N/A' }}</p>
+                <p><strong>Email:</strong> {{ $user->email ?? 'N/A' }}</p>
+                {{-- You can add more profile details here using $user->property --}}
             </div>
-        </div>
+        @else
+             <div class="profile-info">
+                <p>Could not load user information.</p>
+             </div>
+        @endif
+
+        <a href="{{ route('orders.index') }}" class="orders-link-btn">View My Orders</a>
+
+        {{-- Correct the route name in the form action --}}
+        <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+            @csrf
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
     </div>
 </x-layout>

@@ -4,7 +4,7 @@
             <!-- Logo on the left -->
             <a href="/">
                 <div class="flex items-center gap-2">
-                    <h1 class="text-xl font-bold">Dough</h1>
+                    <h1 class="text-2xl font-coiny">Dough</h1>
                     <img src="{{ asset('images/remi.png') }}" alt="logo" class="w-10 h-10">
                 </div>
             </a>
@@ -21,9 +21,14 @@
                     MENUS
                 </a>
 
-                <a href="/order"
-                    class="{{ request()->is('order') ? ' font-bold' : '' }} rounded-md px-3 py-2 text-md hover:text-[#F0C672]">
+                <a href="/orders"
+                    class="{{ request()->is('orders') ? ' font-bold' : '' }} rounded-md px-3 py-2 text-md hover:text-[#F0C672]">
                     ORDER
+                </a>
+
+                <a href="/order/confirm"
+                    class="{{ request()->is('cart') ? ' font-bold' : '' }} rounded-md px-3 py-2 text-md hover:text-[#F0C672]">
+                    CART
                 </a>
 
                 <a href="/profile" class="p-2 rounded-full hover:bg-[#e8d9c5] transition">
