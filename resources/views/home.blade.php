@@ -13,7 +13,7 @@
 
         <div class="absolute inset-0 flex items-center justify-center gap-50">
             <div>
-                <h1 class="text-6xl font-bold text-[#783F12] mb-7">Dough Re-Mi</h1>
+                <h1 class="text-6xl text-[#783F12] mb-7 font-coiny">Dough Re-Mi</h1>
                 <p class="text-md text-[#783F12]">
                     Looking for something special for your special moment?</br>
                     Create your own custom cookie here!
@@ -32,7 +32,7 @@
 
     {{-- 2nd content section --}}
     <div class="container mx-auto px-4 pt-25 text-center">
-        <h1 class="pb-20 text-5xl text-[#F0C672] font-bold">What makes us SPECIAL?</h1>
+        <h1 class="pb-20 text-5xl text-[#F0C672] font-coiny">What makes us SPECIAL?</h1>
 
         <div class="flex justify-center gap-50 pxy-4">
             {{-- image 1 --}}
@@ -89,10 +89,10 @@
         <div class="absolute inset-0 flex flex-col items-end px-10 py-20">
             <!-- "How to order" heading section (right-aligned) -->
             <div class="text-right text-[#783F12] mt-30 mx-20">
-                <h1 class="text-5xl font-bold">how</h1>
-                <h1 class="text-5xl font-bold">to order a</h1>
-                <h1 class="text-5xl font-bold">customizable</h1>
-                <h1 class="text-5xl font-bold">cookie?</h1>
+                <h1 class="text-5xl font-coiny">how</h1>
+                <h1 class="text-5xl font-coiny">to order a</h1>
+                <h1 class="text-5xl font-coiny">customizable</h1>
+                <h1 class="text-5xl font-coiny">cookie?</h1>
             </div>
 
             <!-- Image cards container (centered below heading) -->
@@ -140,7 +140,7 @@
 
     {{-- 4th content section --}}
     <div class="relative w-full min-h-[50vh] py-12 flex flex-col items-center justify-center bg-[#FAF5F2]">
-        <h1 class="text-[#A4B38C] font-bold text-5xl mb-8 mt-10 z-10">PRICELIST</h1>
+        <h1 class="text-[#A4B38C] font-coiny text-5xl mb-8 mt-10 z-10">PRICELIST</h1>
 
         <div class="relative w-full max-w-[700px] mx-auto px-4 h-[500px]">
             <svg class="absolute w-full h-full" viewBox="0 0 778 607" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -151,25 +151,25 @@
             <div class="absolute inset-0 overflow-y-auto p-8 flex flex-col items-center justify-center gap-6">
                 <!-- Price Item 1 -->
                 <div class="text-center max-w-[500px] w-full">
-                    <h2 class="text-3xl font-bold text-[#783F12] mb-2">Sweet Pick - 10k</h2>
+                    <h2 class="text-3xl font-coiny text-[#783F12] mb-2">Sweet Pick - 10k</h2>
                     <p class="text-md text-[#783F12]">Single cookie (non-custom, based on templates)</p>
                 </div>
 
                 <!-- Price Item 2 -->
                 <div class="text-center max-w-[500px] w-full">
-                    <h2 class="text-3xl font-bold text-[#783F12] mb-2">Cookie Me! - 12k</h2>
+                    <h2 class="text-3xl font-coiny text-[#783F12] mb-2">Cookie Me! - 12k</h2>
                     <p class="text-md text-[#783F12]">Single custom cookie</p>
                 </div>
 
                 <!-- Price Item 3 -->
                 <div class="text-center max-w-[500px] w-full">
-                    <h2 class="text-3xl font-bold text-[#783F12] mb-2">Joy Box - 250k</h2>
+                    <h2 class="text-3xl font-coiny text-[#783F12] mb-2">Joy Box - 250k</h2>
                     <p class="text-md text-[#783F12]">Hamper (non-custom, based on templates)</p>
                 </div>
 
                 <!-- Price Item 4 -->
                 <div class="text-center max-w-[500px] w-full">
-                    <h2 class="text-3xl font-bold text-[#783F12] mb-2">The Signature Hamper - 300k</h2>
+                    <h2 class="text-3xl font-coiny text-[#783F12] mb-2">The Signature Hamper - 300k</h2>
                     <p class="text-md text-[#783F12]">Custom cookie hamper</p>
                 </div>
             </div>
@@ -188,7 +188,7 @@
             <!-- Text Content at Bottom Left -->
             <div class="absolute bottom-0 left-0 p-8 md:p-40 text-left">
                 <div class="max-w-md space-y-4 md:space-y-6">
-                    <h1 class="text-4xl text-[#FAF5F2] md:text-5xl font-bold leading-tight">
+                    <h1 class="text-4xl text-[#FAF5F2] md:text-5xl font-coiny leading-tight">
                         It's not just a package, it's a cookie party in a box!
                     </h1>
 

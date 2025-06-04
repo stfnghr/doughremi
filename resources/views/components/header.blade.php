@@ -4,7 +4,7 @@
             <!-- Logo on the left -->
             <a href="/">
                 <div class="flex items-center gap-2">
-                    <h1 class="text-xl font-bold">Dough</h1>
+                    <h1 class="text-2xl font-coiny">Dough</h1>
                     <img src="{{ asset('images/remi.png') }}" alt="logo" class="w-10 h-10">
                 </div>
             </a>

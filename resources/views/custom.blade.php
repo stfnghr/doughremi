@@ -163,7 +163,7 @@
         <div class="w-1/3 px-10 py-10">
             <a href="/">
                 <div class="flex items-center gap-3 pb-10">
-                    <h1 class="text-4xl font-bold text-[#783F12]">Dough</h1>
+                    <h1 class="text-4xl font-coiny text-[#783F12]">Dough</h1>
                     <img src="{{ asset('images/remi.png') }}" alt="douremi" class="w-15">
                 </div>
             </a>
