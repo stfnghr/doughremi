@@ -17,9 +17,13 @@ return new class extends Migration
             $table->foreignId('menu_id')->nullable()->constrained('menus');
             $table->foreignId('courier_id')->nullable()->constrained('couriers')->onDelete('cascade');
             $table->unsignedInteger('amount');
-            $table->double('price', 8, 2);
+            $table->double('price');
             $table->date('delivery_date');
             $table->string('delivery_status', 50);
+            $table->string('custom_name')->nullable();
+            $table->string('shape')->nullable();
+            $table->string('color')->nullable();
+            $table->string('topping')->nullable();
             $table->timestamps();
         });
     }
