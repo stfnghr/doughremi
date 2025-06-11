@@ -4,10 +4,8 @@
 
     <div class="bg-[#FAF5F2] p-8">
         <!-- Header Section -->
-        <div class="flex justify-center items-center space-x-5 relative">
-            <h1 class="text-4xl font-bold text-[#783F12]">Sweet Pick</h1>
-
-            <!-- Dropdown Trigger -->
+        <div class="flex justify-center items-center space-x-5 relative mt-8">
+            <h1 class="text-5xl font-coiny text-[#783F12]">Sweet Pick</h1>
             <div class="relative inline-block text-left">
                 <button type="button" class="focus:outline-none" id="dropdown-button" aria-expanded="false"
                     aria-haspopup="true">
@@ -19,8 +17,6 @@
                             fill="#783F12" />
                     </svg>
                 </button>
-
-                <!-- Dropdown Panel (hidden by default) -->
                 <div class="hidden absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
                     role="menu" aria-orientation="vertical" aria-labelledby="dropdown-button" tabindex="-1">
                     <div class="py-1" role="none">
@@ -32,75 +28,66 @@
         </div>
 
         <script>
-            // Toggle dropdown visibility
             document.getElementById('dropdown-button').addEventListener('click', function() {
                 const dropdown = this.nextElementSibling;
                 const isExpanded = this.getAttribute('aria-expanded') === 'true';
-
-                // Toggle visibility
                 dropdown.classList.toggle('hidden');
                 this.setAttribute('aria-expanded', !isExpanded);
             });
-
-            // Close dropdown when clicking outside
             document.addEventListener('click', function(event) {
                 const dropdownButton = document.getElementById('dropdown-button');
-                const dropdown = dropdownButton.nextElementSibling;
-
-                if (!dropdownButton.contains(event.target) && !dropdown.contains(event.target)) {
-                    dropdown.classList.add('hidden');
-                    dropdownButton.setAttribute('aria-expanded', 'false');
+                if (dropdownButton) { // Check if dropdownButton exists
+                    const dropdown = dropdownButton.nextElementSibling;
+                    if (dropdown && !dropdownButton.contains(event.target) && !dropdown.contains(event.target)) {
+                        dropdown.classList.add('hidden');
+                        dropdownButton.setAttribute('aria-expanded', 'false');
+                    }
                 }
             });
         </script>
 
-        <div class="justify-items-center my-8 text-[#783F12]">
+        <div class="justify-items-center mt-3 mb-10 text-[#783F12]">
             <p>Single cookie (non-custom, based on templates) - 10k</p>
         </div>
 
-        <!-- Cookie Grid -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-8 justify-items-center">
-            @php
-                $cookies = [
-                    ['img' => 'chocochip_cookie.png', 'name' => 'Chocolate Chip'],
-                    ['img' => 'chocolate_cookie.png', 'name' => 'Double Chocolate'],
-                    ['img' => 'vanilla_cookie.png', 'name' => 'Vanilla Bean'],
-                    ['img' => 'strawberry_cookie.png', 'name' => 'Strawberry Cream'],
-                    ['img' => 'matcha_cookie.png', 'name' => 'Matcha Green Tea'],
-                    ['img' => 'saltedcaramel_cookie.png', 'name' => 'Salted Caramel'],
-                    ['img' => 'biscoff_cookie.png', 'name' => 'Lotus Biscoff'],
-                ];
-            @endphp
-
             @foreach ($cookies as $cookie)
-                <div class="flex flex-col items-center pt-10">
-                    <div class="relative w-full max-w-[200px]">
-                        <div
-                            class="absolute -top-15 left-1/2 transform -translate-x-1/2 w-40 h-40 flex items-center justify-center z-10">
-                            <img src="{{ asset('images/' . $cookie['img']) }}" alt="{{ $cookie['name'] }} Cookie"
-                                class="object-contain max-h-36" />
+                {{-- Each cookie is now a form that submits to cart.add --}}
+                <form action="{{ route('cart.add') }}" method="POST" class="contents">
+                    @csrf
+                    <input type="hidden" name="id" value="{{ $cookie->id }}"> {{-- Use the database ID --}}
+                    <input type="hidden" name="name" value="{{ $cookie->name }}">
+                    <input type="hidden" name="price" value="{{ $cookie->price }}">
+                    <input type="hidden" name="image" value="{{ $cookie->image }}">
+                    <input type="hidden" name="type" value="sweet-pick">
+
+                    <button type="submit"
+                       class="flex flex-col items-center pt-10 no-underline hover:opacity-80 transition-opacity focus:outline-none appearance-none text-left">
+                        <div class="relative w-full max-w-[200px]">
+                            <div
+                                class="absolute -top-15 left-1/2 transform -translate-x-1/2 w-40 h-40 flex items-center justify-center z-10">
+                                <img src="{{ asset('images/' . $cookie->image) }}" alt="{{ $cookie->name }} Cookie"
+                                    class="object-contain max-h-36" />
+                            </div>
+                            <div
+                                class="w-[180px] h-[150px] bg-[#EFE5D9] rounded-[35px] pt-20 flex items-center justify-center p-4">
+                                <p class="text-[#783F12] text-center">{{ $cookie->name }}</p>
+                            </div>
                         </div>
-                        <div
-                            class="w-[180px] h-[150px] bg-[#EFE5D9] rounded-[35px] pt-20 flex items-center justify-center p-4">
-                            <p class="text-[#783F12] text-center">{{ $cookie['name'] }}</p>
-                        </div>
-                    </div>
-                </div>
+                    </button>
+                </form>
             @endforeach
 
-            <a href="/custom">
-                <div class="flex flex-col items-center pt-10">
-                    <div class="relative w-full max-w-[200px]">
-                        <div
-                            class="absolute -top-15 left-1/2 transform -translate-x-1/2 w-40 h-40 flex items-center justify-center z-10">
-                            <img src="{{ asset('images/customkuki.png') }}" alt="Custom a Cookie"
-                                class="object-contain max-h-36" />
-                        </div>
-
-                        <div
-                            class="w-[180px] h-[150px] bg-[#EFE5D9] rounded-[35px] pt-20 flex items-center justify-center p-4">
-                            <p class="text-[#783F12] text-center">custom a cookie?</p>
-                        </div>
+            <a href="{{ route('start.customization') }}" class="flex flex-col items-center pt-10 no-underline hover:opacity-80 transition-opacity">
+                <div class="relative w-full max-w-[200px]">
+                    <div
+                        class="absolute -top-15 left-1/2 transform -translate-x-1/2 w-40 h-40 flex items-center justify-center z-10">
+                        <img src="{{ asset('images/customkuki.png') }}" alt="Custom a Cookie"
+                            class="object-contain max-h-36" />
+                    </div>
+                    <div
+                        class="w-[180px] h-[150px] bg-[#EFE5D9] rounded-[35px] pt-20 flex items-center justify-center p-4">
+                        <p class="text-[#783F12] text-center text-lg font-coiny">custom a cookie?</p>
                     </div>
                 </div>
             </a>
