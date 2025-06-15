@@ -12,8 +12,8 @@ use App\Http\Controllers\Admin\AdminMenuController;
 use App\Http\Controllers\Admin\AdminOrderController;
 
 Route::get('/', function () {
-    return view('home', ["pageTitle" => "Home"]);
-})->name('home'); // Added name for home route
+    return view('home', ["pageTitle" => "Dough Re-Mi"]);
+})->name('Home'); // Added name for home route
 
 // Login Route
 Route::get('/login', function () {
