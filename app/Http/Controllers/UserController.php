@@ -8,8 +8,6 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\Rules\Password;
-// use Illuminate\Support\Facades\Hash; // Not strictly needed here if model handles hashing
-// use Illuminate\Validation\Rules\Password; // Optional: For more complex password rules
 
 class UserController extends Controller
 {
@@ -53,7 +51,6 @@ class UserController extends Controller
             if ($user->is_admin) {
                 return redirect()->route('admin.home')->with('success', 'Welcome back, Admin!');
             } else {
-                // Use intended URL or default to /profile
                 return redirect()->intended('/profile')->with('success', 'Logged in successfully!');
             }
     }
